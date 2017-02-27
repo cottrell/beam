@@ -78,7 +78,7 @@ class WindowedValue(object):
     on unequal values (always returning 1).
     """
     if type(left) is not type(right):
-      return cmp(type(left), type(right))
+      return type(left) == type(right)
     else:
       # TODO(robertwb): Avoid the type checks?
       # Returns False (0) if equal, and True (1) if not.
