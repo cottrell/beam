@@ -56,7 +56,7 @@ class TestRowAsDictJsonCoder(unittest.TestCase):
     self.assertEqual(test_value, coder.decode(coder.encode(test_value)))
 
   def json_compliance_exception(self, value):
-    with self.assertRaisesRegexp(ValueError, re.escape(JSON_COMPLIANCE_ERROR)):
+    with self.assertRaisesRegex(ValueError, re.escape(JSON_COMPLIANCE_ERROR)):
       coder = RowAsDictJsonCoder()
       test_value = {'s': value}
       coder.decode(coder.encode(test_value))
@@ -106,12 +106,12 @@ class TestTableRowJsonCoder(unittest.TestCase):
     test_row = bigquery.TableRow(
         f=[bigquery.TableCell(v=to_json_value(e))
            for e in ['abc', 123, 123.456, True]])
-    with self.assertRaisesRegexp(AttributeError,
+    with self.assertRaisesRegex(AttributeError,
                                  r'^The TableRowJsonCoder requires'):
       coder.encode(test_row)
 
   def json_compliance_exception(self, value):
-    with self.assertRaisesRegexp(ValueError, re.escape(JSON_COMPLIANCE_ERROR)):
+    with self.assertRaisesRegex(ValueError, re.escape(JSON_COMPLIANCE_ERROR)):
       schema_definition = [('f', 'FLOAT')]
       schema = bigquery.TableSchema(
           fields=[bigquery.TableFieldSchema(name=k, type=v)
@@ -474,14 +474,14 @@ class TestBigQueryReader(unittest.TestCase):
     self.assertFalse(reader.flatten_results)
 
   def test_using_both_query_and_table_fails(self):
-    with self.assertRaisesRegexp(
+    with self.assertRaisesRegex(
         ValueError,
         r'Both a BigQuery table and a query were specified\. Please specify '
         r'only one of these'):
       beam.io.BigQuerySource(table='dataset.table', query='query')
 
   def test_using_neither_query_nor_table_fails(self):
-    with self.assertRaisesRegexp(
+    with self.assertRaisesRegex(
         ValueError, r'A BigQuery table or a query must be specified'):
       beam.io.BigQuerySource()
 
@@ -551,7 +551,7 @@ class TestBigQueryReader(unittest.TestCase):
     options = PipelineOptions(flags=['--project', 'myproject'])
     source.pipeline_options = options
     reader = source.reader()
-    self.assertEquals('SELECT * FROM [myproject:mydataset.mytable];',
+    self.assertEqual('SELECT * FROM [myproject:mydataset.mytable];',
                       reader.query)
 
 
@@ -564,7 +564,7 @@ class TestBigQueryWriter(unittest.TestCase):
     client.tables.Get.side_effect = HttpError(
         response={'status': '404'}, url='', content='')
     create_disposition = beam.io.BigQueryDisposition.CREATE_NEVER
-    with self.assertRaisesRegexp(
+    with self.assertRaisesRegex(
         RuntimeError, r'Table project:dataset\.table not found but create '
                       r'disposition is CREATE_NEVER'):
       with beam.io.BigQuerySink(
@@ -597,7 +597,7 @@ class TestBigQueryWriter(unittest.TestCase):
     client.tables.Get.side_effect = HttpError(
         response={'status': '404'}, url='', content='')
     create_disposition = beam.io.BigQueryDisposition.CREATE_IF_NEEDED
-    with self.assertRaisesRegexp(
+    with self.assertRaisesRegex(
         RuntimeError, r'Table project:dataset\.table requires a schema\. None '
                       r'can be inferred because the table does not exist'):
       with beam.io.BigQuerySink(
@@ -615,7 +615,7 @@ class TestBigQueryWriter(unittest.TestCase):
         schema=bigquery.TableSchema())
     client.tabledata.List.return_value = bigquery.TableDataList(totalRows=1)
     write_disposition = beam.io.BigQueryDisposition.WRITE_EMPTY
-    with self.assertRaisesRegexp(
+    with self.assertRaisesRegex(
         RuntimeError, r'Table project:dataset\.table is not empty but write '
                       r'disposition is WRITE_EMPTY'):
       with beam.io.BigQuerySink(
@@ -698,7 +698,7 @@ class TestBigQueryWriter(unittest.TestCase):
     sample_row = {'i': 1, 'b': True, 's': 'abc', 'f': 3.14}
     expected_rows = []
     json_object = bigquery.JsonObject()
-    for k, v in sample_row.iteritems():
+    for k, v in sample_row.items():
       json_object.additionalProperties.append(
           bigquery.JsonObject.AdditionalProperty(
               key=k, value=to_json_value(v)))
@@ -718,7 +718,7 @@ class TestBigQueryWriter(unittest.TestCase):
     options = PipelineOptions(flags=['--project', 'myproject'])
     sink.pipeline_options = options
     writer = sink.writer()
-    self.assertEquals('myproject', writer.project_id)
+    self.assertEqual('myproject', writer.project_id)
 
 
 @unittest.skipIf(HttpError is None, 'GCP dependencies are not installed')

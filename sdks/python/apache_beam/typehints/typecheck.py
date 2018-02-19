@@ -129,7 +129,7 @@ class TypeCheckWrapperDoFn(AbstractDoFnWrapper):
   def process(self, *args, **kwargs):
     if self._input_hints:
       actual_inputs = inspect.getcallargs(self._process_fn, *args, **kwargs)
-      for var, hint in self._input_hints.items():
+      for var, hint in list(self._input_hints.items()):
         if hint is actual_inputs[var]:
           # self parameter
           continue
@@ -205,7 +205,7 @@ class TypeCheckCombineFn(core.CombineFn):
       except TypeCheckError as e:
         error_msg = ('Runtime type violation detected within %s: '
                      '%s' % (self._label, e))
-        raise TypeCheckError, error_msg, sys.exc_info()[2]
+        raise TypeCheckError(error_msg).with_traceback(sys.exc_info()[2])
     return self._combinefn.add_input(accumulator, element, *args, **kwargs)
 
   def merge_accumulators(self, accumulators, *args, **kwargs):
@@ -220,7 +220,7 @@ class TypeCheckCombineFn(core.CombineFn):
       except TypeCheckError as e:
         error_msg = ('Runtime type violation detected within %s: '
                      '%s' % (self._label, e))
-        raise TypeCheckError, error_msg, sys.exc_info()[2]
+        raise TypeCheckError(error_msg).with_traceback(sys.exc_info()[2])
     return result
 
 

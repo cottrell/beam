@@ -16,7 +16,7 @@
 #
 
 import bz2
-import cStringIO
+import io
 import gzip
 import logging
 import math
@@ -183,19 +183,19 @@ class TestConcatSource(unittest.TestCase):
     filebasedsource.MAX_NUM_THREADS_FOR_SIZE_ESTIMATION = 2
 
   def test_read(self):
-    sources = [TestConcatSource.DummySource(range(start, start + 10)) for start
+    sources = [TestConcatSource.DummySource(list(range(start, start + 10))) for start
                in [0, 10, 20]]
     concat = ConcatSource(sources)
     range_tracker = concat.get_range_tracker(None, None)
     read_data = [value for value in concat.read(range_tracker)]
-    self.assertItemsEqual(range(30), read_data)
+    self.assertItemsEqual(list(range(30)), read_data)
 
   def test_split(self):
-    sources = [TestConcatSource.DummySource(range(start, start + 10)) for start
+    sources = [TestConcatSource.DummySource(list(range(start, start + 10))) for start
                in [0, 10, 20]]
     concat = ConcatSource(sources)
     splits = [split for split in concat.split()]
-    self.assertEquals(6, len(splits))
+    self.assertEqual(6, len(splits))
 
     # Reading all splits
     read_data = []
@@ -205,13 +205,13 @@ class TestConcatSource(unittest.TestCase):
           split.stop_position)
       read_data.extend([value for value in split.source.read(
           range_tracker_for_split)])
-    self.assertItemsEqual(range(30), read_data)
+    self.assertItemsEqual(list(range(30)), read_data)
 
   def test_estimate_size(self):
-    sources = [TestConcatSource.DummySource(range(start, start + 10)) for start
+    sources = [TestConcatSource.DummySource(list(range(start, start + 10))) for start
                in [0, 10, 20]]
     concat = ConcatSource(sources)
-    self.assertEquals(30, concat.estimate_size())
+    self.assertEqual(30, concat.estimate_size())
 
 
 class TestFileBasedSource(unittest.TestCase):
@@ -253,9 +253,9 @@ class TestFileBasedSource(unittest.TestCase):
 
   def test_validation_failing(self):
     no_files_found_error = 'No files found based on the file pattern*'
-    with self.assertRaisesRegexp(IOError, no_files_found_error):
+    with self.assertRaisesRegex(IOError, no_files_found_error):
       LineSource('dummy_pattern')
-    with self.assertRaisesRegexp(IOError, no_files_found_error):
+    with self.assertRaisesRegex(IOError, no_files_found_error):
       temp_dir = tempfile.mkdtemp()
       LineSource(os.path.join(temp_dir, '*'))
 
@@ -300,18 +300,18 @@ class TestFileBasedSource(unittest.TestCase):
     file_name, expected_data = write_data(10)
     assert len(expected_data) == 10
     fbs = LineSource(file_name)
-    self.assertEquals(10 * 6, fbs.estimate_size())
+    self.assertEqual(10 * 6, fbs.estimate_size())
 
   def test_estimate_size_of_pattern(self):
     pattern, expected_data = write_pattern([5, 3, 10, 8, 8, 4])
     assert len(expected_data) == 38
     fbs = LineSource(pattern)
-    self.assertEquals(38 * 6, fbs.estimate_size())
+    self.assertEqual(38 * 6, fbs.estimate_size())
 
     pattern, expected_data = write_pattern([5, 3, 9])
     assert len(expected_data) == 17
     fbs = LineSource(pattern)
-    self.assertEquals(17 * 6, fbs.estimate_size())
+    self.assertEqual(17 * 6, fbs.estimate_size())
 
   def test_estimate_size_with_sampling_same_size(self):
     num_files = 2 * FileBasedSource.MIN_NUMBER_OF_FILES_TO_STAT
@@ -407,7 +407,7 @@ class TestFileBasedSource(unittest.TestCase):
     assert len(expected_data) == 20
     fbs = LineSource(pattern, splittable=False)
     splits = [split for split in fbs.split(desired_bundle_size=15)]
-    self.assertEquals(3, len(splits))
+    self.assertEqual(3, len(splits))
 
   def test_source_file_unsplittable(self):
     file_name, expected_data = write_data(100)
@@ -473,7 +473,7 @@ class TestFileBasedSource(unittest.TestCase):
     chunks = [lines[splits[i-1]:splits[i]] for i in range(1, len(splits))]
     compressed_chunks = []
     for c in chunks:
-      out = cStringIO.StringIO()
+      out = io.StringIO()
       with gzip.GzipFile(fileobj=out, mode="w") as f:
         f.write('\n'.join(c))
       compressed_chunks.append(out.getvalue())
@@ -520,7 +520,7 @@ class TestFileBasedSource(unittest.TestCase):
     chunks = [lines[splits[i - 1]:splits[i]] for i in range(1, len(splits))]
     compressed_chunks = []
     for c in chunks:
-      out = cStringIO.StringIO()
+      out = io.StringIO()
       with gzip.GzipFile(fileobj=out, mode="w") as f:
         f.write('\n'.join(c))
       compressed_chunks.append(out.getvalue())
@@ -540,7 +540,7 @@ class TestFileBasedSource(unittest.TestCase):
     chunks_to_write = []
     for i, c in enumerate(chunks):
       if i%2 == 0:
-        out = cStringIO.StringIO()
+        out = io.StringIO()
         with gzip.GzipFile(fileobj=out, mode="w") as f:
           f.write('\n'.join(c))
         chunks_to_write.append(out.getvalue())
@@ -586,19 +586,19 @@ class TestSingleFileSource(unittest.TestCase):
     file_name = 'dummy_pattern'
     fbs = LineSource(file_name, validate=False)
 
-    with self.assertRaisesRegexp(TypeError, start_not_a_number_error):
+    with self.assertRaisesRegex(TypeError, start_not_a_number_error):
       SingleFileSource(
           fbs, file_name='dummy_file', start_offset='aaa', stop_offset='bbb')
-    with self.assertRaisesRegexp(TypeError, start_not_a_number_error):
+    with self.assertRaisesRegex(TypeError, start_not_a_number_error):
       SingleFileSource(
           fbs, file_name='dummy_file', start_offset='aaa', stop_offset=100)
-    with self.assertRaisesRegexp(TypeError, stop_not_a_number_error):
+    with self.assertRaisesRegex(TypeError, stop_not_a_number_error):
       SingleFileSource(
           fbs, file_name='dummy_file', start_offset=100, stop_offset='bbb')
-    with self.assertRaisesRegexp(TypeError, stop_not_a_number_error):
+    with self.assertRaisesRegex(TypeError, stop_not_a_number_error):
       SingleFileSource(
           fbs, file_name='dummy_file', start_offset=100, stop_offset=None)
-    with self.assertRaisesRegexp(TypeError, start_not_a_number_error):
+    with self.assertRaisesRegex(TypeError, start_not_a_number_error):
       SingleFileSource(
           fbs, file_name='dummy_file', start_offset=None, stop_offset=100)
 
@@ -618,10 +618,10 @@ class TestSingleFileSource(unittest.TestCase):
     fbs = LineSource('dummy_pattern', validate=False)
     SingleFileSource(
         fbs, file_name='dummy_file', start_offset=99, stop_offset=100)
-    with self.assertRaisesRegexp(ValueError, start_larger_than_stop_error):
+    with self.assertRaisesRegex(ValueError, start_larger_than_stop_error):
       SingleFileSource(
           fbs, file_name='dummy_file', start_offset=100, stop_offset=99)
-    with self.assertRaisesRegexp(ValueError, start_larger_than_stop_error):
+    with self.assertRaisesRegex(ValueError, start_larger_than_stop_error):
       SingleFileSource(
           fbs, file_name='dummy_file', start_offset=100, stop_offset=100)
 
@@ -631,11 +631,11 @@ class TestSingleFileSource(unittest.TestCase):
     # Should simply return stop_offset - start_offset
     source = SingleFileSource(
         fbs, file_name='dummy_file', start_offset=0, stop_offset=100)
-    self.assertEquals(100, source.estimate_size())
+    self.assertEqual(100, source.estimate_size())
 
     source = SingleFileSource(fbs, file_name='dummy_file', start_offset=10,
                               stop_offset=100)
-    self.assertEquals(90, source.estimate_size())
+    self.assertEqual(90, source.estimate_size())
 
   def test_read_range_at_beginning(self):
     fbs = LineSource('dummy_pattern', validate=False)
@@ -677,10 +677,10 @@ class TestSingleFileSource(unittest.TestCase):
     assert len(expected_data) == 10
     source = SingleFileSource(fbs, file_name, 0, 10 * 6)
     splits = [split for split in source.split(desired_bundle_size=100)]
-    self.assertEquals(1, len(splits))
-    self.assertEquals(60, splits[0].weight)
-    self.assertEquals(0, splits[0].start_position)
-    self.assertEquals(60, splits[0].stop_position)
+    self.assertEqual(1, len(splits))
+    self.assertEqual(60, splits[0].weight)
+    self.assertEqual(0, splits[0].start_position)
+    self.assertEqual(60, splits[0].stop_position)
 
     range_tracker = splits[0].source.get_range_tracker(None, None)
     read_data = [value for value in splits[0].source.read(range_tracker)]
@@ -693,7 +693,7 @@ class TestSingleFileSource(unittest.TestCase):
     assert len(expected_data) == 10
     source = SingleFileSource(fbs, file_name, 0, 10 * 6)
     splits = [split for split in source.split(desired_bundle_size=25)]
-    self.assertEquals(3, len(splits))
+    self.assertEqual(3, len(splits))
 
     read_data = []
     for split in splits:
@@ -713,7 +713,7 @@ class TestSingleFileSource(unittest.TestCase):
     splits = [split for split in
               source.split(desired_bundle_size=15, start_offset=10,
                            stop_offset=50)]
-    self.assertEquals(3, len(splits))
+    self.assertEqual(3, len(splits))
 
     read_data = []
     for split in splits:

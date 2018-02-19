@@ -17,7 +17,7 @@
 
 """Core PTransform subclasses, such as FlatMap, GroupByKey, and Map."""
 
-from __future__ import absolute_import
+
 
 import copy
 import inspect
@@ -845,7 +845,7 @@ class ParDo(PTransformWithSideInputs):
     """
     main_tag = main_kw.pop('main', None)
     if main_kw:
-      raise ValueError('Unexpected keyword arguments: %s' % main_kw.keys())
+      raise ValueError('Unexpected keyword arguments: %s' % list(main_kw.keys()))
     return _MultiParDo(self, tags, main_tag)
 
   def _pardo_fn_data(self):
@@ -888,7 +888,7 @@ class ParDo(PTransformWithSideInputs):
     # to_runner_api_parameter above).
     indexed_side_inputs = [
         (int(ix[4:]), pvalue.AsSideInput.from_runner_api(si, context))
-        for ix, si in pardo_payload.side_inputs.items()]
+        for ix, si in list(pardo_payload.side_inputs.items())]
     result.side_inputs = [si for _, si in sorted(indexed_side_inputs)]
     return result
 
@@ -1676,7 +1676,7 @@ class Flatten(PTransform):
     super(Flatten, self).__init__()
     self.pipeline = kwargs.pop('pipeline', None)
     if kwargs:
-      raise ValueError('Unexpected keyword arguments: %s' % kwargs.keys())
+      raise ValueError('Unexpected keyword arguments: %s' % list(kwargs.keys()))
 
   def _extract_input_pvalues(self, pvalueish):
     try:
@@ -1721,11 +1721,11 @@ class Create(PTransform):
       value: An object of values for the PCollection
     """
     super(Create, self).__init__()
-    if isinstance(value, basestring):
+    if isinstance(value, str):
       raise TypeError('PTransform Create: Refusing to treat string as '
                       'an iterable. (string=%r)' % value)
     elif isinstance(value, dict):
-      value = value.items()
+      value = list(value.items())
     self.value = tuple(value)
 
   def infer_output_type(self, unused_input_type):
@@ -1751,7 +1751,7 @@ class Create(PTransform):
 
   @staticmethod
   def _create_source_from_iterable(values, coder):
-    return Create._create_source(map(coder.encode, values), coder)
+    return Create._create_source(list(map(coder.encode, values)), coder)
 
   @staticmethod
   def _create_source(serialized_values, coder):

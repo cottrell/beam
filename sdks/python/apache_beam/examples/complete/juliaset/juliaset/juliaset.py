@@ -20,7 +20,7 @@
 We use the quadratic polinomial f(z) = z*z + c, with c = -.62772 +.42193i
 """
 
-from __future__ import absolute_import
+
 
 import argparse
 

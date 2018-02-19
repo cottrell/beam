@@ -23,7 +23,7 @@ context.
 Cells depend on a 'dirty-bit' in the CellCommitState class that tracks whether
 a cell's updates have been committed.
 """
-from __future__ import division
+
 
 import threading
 import time

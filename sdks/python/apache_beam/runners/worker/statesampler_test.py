@@ -16,7 +16,7 @@
 #
 
 """Tests for state sampler."""
-from __future__ import absolute_import
+
 
 import logging
 import time

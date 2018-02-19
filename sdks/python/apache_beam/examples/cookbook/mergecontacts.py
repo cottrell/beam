@@ -29,7 +29,7 @@ A demonstration of:
   Non-linear pipelines (i.e., pipelines with branches)
 """
 
-from __future__ import absolute_import
+
 
 import argparse
 import logging

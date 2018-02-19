@@ -17,7 +17,7 @@
 
 """Manages watermarks of PCollections and AppliedPTransforms."""
 
-from __future__ import absolute_import
+
 
 import threading
 
@@ -50,12 +50,12 @@ class WatermarkManager(object):
       self._transform_to_watermarks[root_transform] = _TransformWatermarks(
           self._clock, transform_keyed_states[root_transform], root_transform)
 
-    for consumers in value_to_consumers.values():
+    for consumers in list(value_to_consumers.values()):
       for consumer in consumers:
         self._transform_to_watermarks[consumer] = _TransformWatermarks(
             self._clock, transform_keyed_states[consumer], consumer)
 
-    for consumers in value_to_consumers.values():
+    for consumers in list(value_to_consumers.values()):
       for consumer in consumers:
         self._update_input_transform_watermarks(consumer)
 
@@ -132,7 +132,7 @@ class WatermarkManager(object):
     assert isinstance(applied_ptransform, pipeline.AppliedPTransform)
     tw = self.get_watermarks(applied_ptransform)
     if tw.refresh():
-      for pval in applied_ptransform.outputs.values():
+      for pval in list(applied_ptransform.outputs.values()):
         if isinstance(pval, pvalue.DoOutputsTuple):
           pvals = (v for v in pval)
         else:
@@ -148,7 +148,7 @@ class WatermarkManager(object):
     and reports if there are any timers set."""
     all_timers = []
     has_realtime_timer = False
-    for applied_ptransform, tw in self._transform_to_watermarks.iteritems():
+    for applied_ptransform, tw in self._transform_to_watermarks.items():
       fired_timers, had_realtime_timer = tw.extract_transform_timers()
       if fired_timers:
         all_timers.append((applied_ptransform, fired_timers))
@@ -194,7 +194,7 @@ class _TransformWatermarks(object):
 
   def hold(self, keyed_earliest_holds):
     with self._lock:
-      for key, hold_value in keyed_earliest_holds.iteritems():
+      for key, hold_value in keyed_earliest_holds.items():
         self._keyed_earliest_holds[key] = hold_value
         if (hold_value is None or
             hold_value == WatermarkManager.WATERMARK_POS_INF):
@@ -238,7 +238,7 @@ class _TransformWatermarks(object):
       self._input_watermark = max(self._input_watermark,
                                   min(pending_holder, producer_watermark))
       earliest_hold = WatermarkManager.WATERMARK_POS_INF
-      for hold in self._keyed_earliest_holds.values():
+      for hold in list(self._keyed_earliest_holds.values()):
         if hold < earliest_hold:
           earliest_hold = hold
       new_output_watermark = min(self._input_watermark, earliest_hold)
@@ -256,7 +256,7 @@ class _TransformWatermarks(object):
     with self._lock:
       fired_timers = []
       has_realtime_timer = False
-      for encoded_key, state in self._keyed_states.iteritems():
+      for encoded_key, state in self._keyed_states.items():
         timers, had_realtime_timer = state.get_timers(
             watermark=self._input_watermark,
             processing_time=self._clock.time())

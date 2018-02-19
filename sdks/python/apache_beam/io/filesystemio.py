@@ -24,13 +24,11 @@ __all__ = ['Downloader', 'Uploader', 'DownloaderStream', 'UploaderStream',
            'PipeStream']
 
 
-class Downloader(object):
+class Downloader(object, metaclass=abc.ABCMeta):
   """Download interface for a single file.
 
   Implementations should support random access reads.
   """
-
-  __metaclass__ = abc.ABCMeta
 
   @abc.abstractproperty
   def size(self):
@@ -52,10 +50,8 @@ class Downloader(object):
     """
 
 
-class Uploader(object):
+class Uploader(object, metaclass=abc.ABCMeta):
   """Upload interface for a single file."""
-
-  __metaclass__ = abc.ABCMeta
 
   @abc.abstractmethod
   def put(self, data):

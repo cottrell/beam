@@ -16,7 +16,7 @@
 #
 """Local File system implementation for accessing files on disk."""
 
-from __future__ import absolute_import
+
 
 import glob
 import os

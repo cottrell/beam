@@ -102,9 +102,9 @@ class TestMetricsContainer(unittest.TestCase):
     self.assertEqual(len(logical.gauges), 5)
 
     self.assertEqual(set(dirty_values),
-                     set([v.value for _, v in logical.gauges.items()]))
+                     set([v.value for _, v in list(logical.gauges.items())]))
     self.assertEqual(set(dirty_values),
-                     set([v for _, v in logical.counters.items()]))
+                     set([v for _, v in list(logical.counters.items())]))
 
     # Retrieve ALL updates.
     cumulative = mc.get_cumulative()
@@ -113,9 +113,9 @@ class TestMetricsContainer(unittest.TestCase):
     self.assertEqual(len(cumulative.gauges), 10)
 
     self.assertEqual(set(dirty_values + clean_values),
-                     set([v for _, v in cumulative.counters.items()]))
+                     set([v for _, v in list(cumulative.counters.items())]))
     self.assertEqual(set(dirty_values + clean_values),
-                     set([v.value for _, v in cumulative.gauges.items()]))
+                     set([v.value for _, v in list(cumulative.gauges.items())]))
 
 
 class TestMetricsEnvironment(unittest.TestCase):

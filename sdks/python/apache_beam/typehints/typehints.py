@@ -337,7 +337,7 @@ def validate_composite_type_param(type_param, error_msg_prefix):
   # Must either be a TypeConstraint instance or a basic Python type.
   possible_classes = [type, TypeConstraint]
   if sys.version_info[0] == 2:
-    possible_classes.append(types.ClassType)
+    possible_classes.append(type)
   is_not_type_constraint = (
       not isinstance(type_param, tuple(possible_classes))
       and type_param is not None)
@@ -809,7 +809,7 @@ class DictHint(CompositeTypeHint):
             'type dict. %s is of type %s.'
             % (dict_instance, dict_instance.__class__.__name__))
 
-      for key, value in dict_instance.items():
+      for key, value in list(dict_instance.items()):
         try:
           check_constraint(self.key_type, key)
         except CompositeTypeHintError as e:

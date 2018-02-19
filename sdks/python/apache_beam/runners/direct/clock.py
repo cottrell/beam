@@ -19,7 +19,7 @@
 
 For internal use only. No backwards compatibility guarantees.
 """
-from __future__ import absolute_import
+
 
 import time
 

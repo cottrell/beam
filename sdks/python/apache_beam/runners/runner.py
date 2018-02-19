@@ -17,7 +17,7 @@
 
 """PipelineRunner, an abstract base runner object."""
 
-from __future__ import absolute_import
+
 
 import logging
 import os

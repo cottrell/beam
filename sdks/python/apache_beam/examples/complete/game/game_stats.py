@@ -77,8 +77,8 @@ NOTE [BEAM-2354]: This example is not yet runnable by DataflowRunner.
 --------------------------------------------------------------------------------
 """
 
-from __future__ import absolute_import
-from __future__ import print_function
+
+
 
 import argparse
 import csv

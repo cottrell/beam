@@ -173,16 +173,16 @@ class MetricsContainer(object):
     if filter is None:
       filter = lambda v: True
     counters = {MetricKey(self.step_name, k): v.get_cumulative()
-                for k, v in self.counters.items()
-                if filter(v)}
+                for k, v in list(self.counters.items())
+                if list(filter(v))}
 
     distributions = {MetricKey(self.step_name, k): v.get_cumulative()
-                     for k, v in self.distributions.items()
-                     if filter(v)}
+                     for k, v in list(self.distributions.items())
+                     if list(filter(v))}
 
     gauges = {MetricKey(self.step_name, k): v.get_cumulative()
-              for k, v in self.gauges.items()
-              if filter(v)}
+              for k, v in list(self.gauges.items())
+              if list(filter(v))}
 
     return MetricUpdates(counters, distributions, gauges)
 
@@ -208,11 +208,11 @@ class MetricsContainer(object):
             metric_name=k.to_runner_api(),
             counter_data=beam_fn_api_pb2.Metrics.User.CounterData(
                 value=v.get_cumulative()))
-         for k, v in self.counters.items()] +
+         for k, v in list(self.counters.items())] +
         [beam_fn_api_pb2.Metrics.User(
             metric_name=k.to_runner_api(),
             distribution_data=v.get_cumulative().to_runner_api())
-         for k, v in self.distributions.items()]
+         for k, v in list(self.distributions.items())]
         #TODO(pabloem): Add gauge metrics.
     )
 

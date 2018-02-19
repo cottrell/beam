@@ -21,7 +21,7 @@ Important: streaming pipeline support in Python Dataflow is in development
 and is not yet available for use.
 """
 
-from __future__ import absolute_import
+
 
 import argparse
 import logging

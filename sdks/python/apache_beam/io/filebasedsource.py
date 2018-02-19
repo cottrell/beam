@@ -98,12 +98,12 @@ class FileBasedSource(iobase.BoundedSource):
         result.
     """
 
-    if not isinstance(file_pattern, (basestring, ValueProvider)):
+    if not isinstance(file_pattern, (str, ValueProvider)):
       raise TypeError('%s: file_pattern must be of type string'
                       ' or ValueProvider; got %r instead'
                       % (self.__class__.__name__, file_pattern))
 
-    if isinstance(file_pattern, basestring):
+    if isinstance(file_pattern, str):
       file_pattern = StaticValueProvider(str, file_pattern)
     self._pattern = file_pattern
 

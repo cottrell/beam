@@ -22,7 +22,7 @@ import gzip
 import os
 import tempfile
 import unittest
-from StringIO import StringIO
+from io import StringIO
 
 from apache_beam.io.filesystem import CompressedFile
 from apache_beam.io.filesystem import CompressionTypes

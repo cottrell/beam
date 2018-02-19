@@ -79,7 +79,7 @@ class FnApiLogRecordHandlerTest(unittest.TestCase):
                          log_entry.severity)
         self.assertEqual('%s: %s' % (msg, num_received_log_entries),
                          log_entry.message)
-        self.assertEqual(u'log_handler_test._verify_fn_log_handler',
+        self.assertEqual('log_handler_test._verify_fn_log_handler',
                          log_entry.log_location)
         self.assertGreater(log_entry.timestamp.seconds, 0)
         self.assertGreater(log_entry.timestamp.nanos, 0)
@@ -101,7 +101,7 @@ def _create_test(name, num_logs):
           lambda self: self._verify_fn_log_handler(num_logs))
 
 
-for test_name, num_logs_entries in data.iteritems():
+for test_name, num_logs_entries in data.items():
   _create_test(test_name, num_logs_entries)
 
 

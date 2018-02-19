@@ -175,7 +175,7 @@ class IOTypeHints(object):
     return IOTypeHints(self.input_types or hints.input_types,
                        self.output_types or hints.output_types)
 
-  def __nonzero__(self):
+  def __bool__(self):
     return bool(self.input_types or self.output_types)
 
   def __repr__(self):

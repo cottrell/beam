@@ -32,7 +32,7 @@ class PValueTest(unittest.TestCase):
     self.assertEqual(pipeline, value.pipeline)
 
   def test_assingleton_multi_element(self):
-    with self.assertRaisesRegexp(
+    with self.assertRaisesRegex(
         ValueError,
         'PCollection of size 2 with more than one element accessed as a '
         'singleton view. First two elements encountered are \"1\", \"2\".'):

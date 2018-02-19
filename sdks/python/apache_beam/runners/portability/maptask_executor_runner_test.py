@@ -39,7 +39,7 @@ class MapTaskExecutorRunnerTest(unittest.TestCase):
     return beam.Pipeline(runner=maptask_executor_runner.MapTaskExecutorRunner())
 
   def test_assert_that(self):
-    with self.assertRaisesRegexp(BeamAssertException, 'bad_assert'):
+    with self.assertRaisesRegex(BeamAssertException, 'bad_assert'):
       with self.create_pipeline() as p:
         assert_that(p | beam.Create(['a', 'b']), equal_to(['a']), 'bad_assert')
 
@@ -86,7 +86,7 @@ class MapTaskExecutorRunnerTest(unittest.TestCase):
       counter_updates = [{'key': key, 'value': val}
                          for container in p.runner.metrics_containers()
                          for key, val in
-                         container.get_updates().counters.items()]
+                         list(container.get_updates().counters.items())]
       counter_values = [update['value'] for update in counter_updates]
       counter_keys = [update['key'] for update in counter_updates]
       assert_that(res, equal_to([1, 2, 3]))

@@ -87,7 +87,7 @@ class MapTaskExecutorRunner(PipelineRunner):
           memoized[x] = 1 + max([-1] + [compute_depth(y) for y in deps[x]])
         return memoized[x]
 
-      return {x: compute_depth(x) for x in deps.keys()}
+      return {x: compute_depth(x) for x in list(deps.keys())}
 
     map_task_depths = compute_depth_map(self.dependencies)
     ordered_map_tasks = sorted((map_task_depths.get(ix, -1), map_task)
@@ -116,7 +116,7 @@ class MapTaskExecutorRunner(PipelineRunner):
     for ix, (_, map_task) in enumerate(ordered_map_tasks):
       logging.info('Running %s', map_task)
       t = time.time()
-      stage_names, all_operations = zip(*map_task)
+      stage_names, all_operations = list(zip(*map_task))
       # TODO(robertwb): The DataflowRunner worker receives system step names
       # (e.g. "s3") that are used to label the output msec counters.  We use the
       # operation names here, but this is not the same scheme used by the
@@ -391,7 +391,7 @@ class GroupingOutputBuffer(object):
   def freeze(self):
     if not self.frozen:
       self._encoded_elements = [self.grouped_coder.encode(kv)
-                                for kv in self.elements.iteritems()]
+                                for kv in self.elements.items()]
     self.frozen = True
     return self._encoded_elements
 
@@ -414,7 +414,7 @@ class GroupedOutputBuffer(object):
   def __len__(self):
     return len(self.buffer.freeze())
 
-  def __nonzero__(self):
+  def __bool__(self):
     return True
 
 

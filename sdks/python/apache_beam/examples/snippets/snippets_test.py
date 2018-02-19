@@ -460,7 +460,7 @@ class SnippetsTest(unittest.TestCase):
     beam.io.ReadFromText = self.old_read_from_text
     beam.io.WriteToText = self.old_write_to_text
     # Cleanup all the temporary files created in the test.
-    map(os.remove, self.temp_files)
+    list(map(os.remove, self.temp_files))
 
   def create_temp_file(self, contents=''):
     with tempfile.NamedTemporaryFile(delete=False) as f:
@@ -487,7 +487,7 @@ class SnippetsTest(unittest.TestCase):
         '--output=%s' % result_path])
     self.assertEqual(
         self.get_output(result_path),
-        [str(s) for s in [(u'aa', 1), (u'bb', 2), (u'cc', 3)]])
+        [str(s) for s in [('aa', 1), ('bb', 2), ('cc', 3)]])
 
   def test_model_pcollection(self):
     temp_path = self.create_temp_file()
@@ -917,7 +917,7 @@ class CombineTest(unittest.TestCase):
         return sum + input, count + 1
 
       def merge_accumulators(self, accumulators):
-        sums, counts = zip(*accumulators)
+        sums, counts = list(zip(*accumulators))
         return sum(sums), sum(counts)
 
       def extract_output(self, sum_count):

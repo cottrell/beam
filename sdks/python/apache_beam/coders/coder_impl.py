@@ -26,7 +26,7 @@ coder_impl.pxd file for type hints.
 
 For internal use only; no backwards-compatibility guarantees.
 """
-from __future__ import absolute_import
+
 
 from types import NoneType
 
@@ -53,7 +53,7 @@ except ImportError:
 # pylint: enable=wrong-import-order, wrong-import-position, ungrouped-imports
 
 try:
-  long        # Python 2
+  int        # Python 2
 except NameError:
   long = int  # Python 3
 
@@ -189,7 +189,7 @@ class DeterministicFastPrimitivesCoderImpl(CoderImpl):
     self._step_label = step_label
 
   def _check_safe(self, value):
-    if isinstance(value, (str, unicode, long, int, float)):
+    if isinstance(value, (str, int, float)):
       pass
     elif value is None:
       pass
@@ -280,7 +280,7 @@ class FastPrimitivesCoderImpl(StreamCoderImpl):
     elif t is str:
       stream.write_byte(STR_TYPE)
       stream.write(value, nested)
-    elif t is unicode:
+    elif t is str:
       unicode_value = value  # for typing
       stream.write_byte(UNICODE_TYPE)
       stream.write(unicode_value.encode('utf-8'), nested)
@@ -294,7 +294,7 @@ class FastPrimitivesCoderImpl(StreamCoderImpl):
       dict_value = value  # for typing
       stream.write_byte(DICT_TYPE)
       stream.write_var_int64(len(dict_value))
-      for k, v in dict_value.iteritems():
+      for k, v in dict_value.items():
         self.encode_to_stream(k, stream, True)
         self.encode_to_stream(v, stream, True)
     elif t is bool:

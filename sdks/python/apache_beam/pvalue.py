@@ -24,7 +24,7 @@ transform (of type PTransform), which describes how the value will be
 produced when the pipeline gets executed.
 """
 
-from __future__ import absolute_import
+
 
 import itertools
 
@@ -258,7 +258,7 @@ class TaggedOutput(object):
   """
 
   def __init__(self, tag, value):
-    if not isinstance(tag, basestring):
+    if not isinstance(tag, str):
       raise TypeError(
           'Attempting to create a TaggedOutput with non-string tag %s' % tag)
     self.tag = tag

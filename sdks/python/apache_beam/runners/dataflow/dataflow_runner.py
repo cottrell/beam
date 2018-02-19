@@ -25,7 +25,7 @@ import logging
 import threading
 import time
 import traceback
-import urllib
+import urllib.request, urllib.parse, urllib.error
 from collections import defaultdict
 
 import apache_beam as beam
@@ -883,12 +883,12 @@ class DataflowRunner(PipelineRunner):
   @staticmethod
   def byte_array_to_json_string(raw_bytes):
     """Implements org.apache.beam.sdk.util.StringUtils.byteArrayToJsonString."""
-    return urllib.quote(raw_bytes)
+    return urllib.parse.quote(raw_bytes)
 
   @staticmethod
   def json_string_to_byte_array(encoded_string):
     """Implements org.apache.beam.sdk.util.StringUtils.jsonStringToByteArray."""
-    return urllib.unquote(encoded_string)
+    return urllib.parse.unquote(encoded_string)
 
 
 class DataflowPipelineResult(PipelineResult):

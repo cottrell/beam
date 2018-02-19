@@ -124,7 +124,7 @@ class GCSFileSystemTest(unittest.TestCase):
     gcsio_mock.size_of_files_in_glob.side_effect = exception
     expected_results = {'gs://bucket/': exception}
 
-    with self.assertRaisesRegexp(BeamIOError,
+    with self.assertRaisesRegex(BeamIOError,
                                  r'^Match operation failed') as error:
       self.fs.match(['gs://bucket/'])
     self.assertEqual(error.exception.exception_details, expected_results)
@@ -200,7 +200,7 @@ class GCSFileSystemTest(unittest.TestCase):
     expected_results = {(s, d):exception for s, d in zip(sources, destinations)}
 
     # Issue batch copy.
-    with self.assertRaisesRegexp(BeamIOError,
+    with self.assertRaisesRegex(BeamIOError,
                                  r'^Copy operation failed') as error:
       self.fs.copy(sources, destinations)
     self.assertEqual(error.exception.exception_details, expected_results)
@@ -289,7 +289,7 @@ class GCSFileSystemTest(unittest.TestCase):
     expected_results = {(s, d):exception for s, d in zip(sources, destinations)}
 
     # Issue batch rename.
-    with self.assertRaisesRegexp(BeamIOError,
+    with self.assertRaisesRegex(BeamIOError,
                                  r'^Rename operation failed') as error:
       self.fs.rename(sources, destinations)
     self.assertEqual(error.exception.exception_details, expected_results)
@@ -335,7 +335,7 @@ class GCSFileSystemTest(unittest.TestCase):
     expected_results = {f:exception for f in files}
 
     # Issue batch delete.
-    with self.assertRaisesRegexp(BeamIOError,
+    with self.assertRaisesRegex(BeamIOError,
                                  r'^Delete operation failed') as error:
       self.fs.delete(files)
     self.assertEqual(error.exception.exception_details, expected_results)

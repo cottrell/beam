@@ -22,7 +22,7 @@ For the stable wordcount example see wordcount.py.
 
 # TODO(BEAM-2887): Merge with wordcount.py.
 
-from __future__ import absolute_import
+
 
 import argparse
 import logging
@@ -102,7 +102,7 @@ def run(argv=None):
 
   counts = (lines
             | 'split' >> (beam.ParDo(WordExtractingDoFn())
-                          .with_output_types(unicode))
+                          .with_output_types(str))
             | 'pair_with_one' >> beam.Map(lambda x: (x, 1))
             | 'group_and_sum' >> beam.CombinePerKey(sum))
 

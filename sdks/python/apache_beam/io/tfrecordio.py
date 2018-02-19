@@ -16,7 +16,7 @@
 #
 """TFRecord sources and sinks."""
 
-from __future__ import absolute_import
+
 
 import logging
 import struct

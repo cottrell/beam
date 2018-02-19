@@ -16,12 +16,12 @@
 #
 """SDK harness for executing Python Fns via the Fn API."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
+
+
+
 
 import logging
-import Queue as queue
+import queue as queue
 import sys
 import threading
 import traceback
@@ -288,7 +288,7 @@ class GrpcStateHandler(object):
     self._requests.put(request)
     while not future.wait(timeout=1):
       if self._exc_info:
-        raise self._exc_info[0], self._exc_info[1], self._exc_info[2]
+        raise self._exc_info[0](self._exc_info[1]).with_traceback(self._exc_info[2])
       elif self._done:
         raise RuntimeError()
     del self._responses_by_id[request.id]

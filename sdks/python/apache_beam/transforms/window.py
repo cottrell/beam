@@ -47,7 +47,7 @@ Custom windowing function classes can be created, by subclassing from
 WindowFn.
 """
 
-from __future__ import absolute_import
+
 
 import abc
 
@@ -108,10 +108,8 @@ class TimestampCombiner(object):
       raise ValueError('Invalid TimestampCombiner: %s.' % timestamp_combiner)
 
 
-class WindowFn(urns.RunnerApiFn):
+class WindowFn(urns.RunnerApiFn, metaclass=abc.ABCMeta):
   """An abstract windowing function defining a basic assign and merge."""
-
-  __metaclass__ = abc.ABCMeta
 
   class AssignContext(object):
     """Context passed to WindowFn.assign()."""

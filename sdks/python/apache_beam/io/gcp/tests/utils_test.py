@@ -60,7 +60,7 @@ class UtilsTest(unittest.TestCase):
     mock_client.return_value.dataset = mock_dataset
     mock_dataset.return_value.exists.return_value = False
 
-    with self.assertRaisesRegexp(
+    with self.assertRaisesRegex(
         Exception, r'^Failed to cleanup. Bigquery dataset unused_dataset '
                    r'doesn\'t exist'):
       utils.delete_bq_table('unused_project',
@@ -77,7 +77,7 @@ class UtilsTest(unittest.TestCase):
     mock_dataset.return_value.table = mock_table
     mock_table.return_value.exists.return_value = False
 
-    with self.assertRaisesRegexp(Exception,
+    with self.assertRaisesRegex(Exception,
                                  r'^Failed to cleanup. Bigquery table '
                                  'unused_table doesn\'t exist'):
       utils.delete_bq_table('unused_project',
@@ -94,7 +94,7 @@ class UtilsTest(unittest.TestCase):
     mock_dataset.return_value.table = mock_table
     mock_table.return_value.exists.return_value = True
 
-    with self.assertRaisesRegexp(Exception,
+    with self.assertRaisesRegex(Exception,
                                  r'^Failed to cleanup. Bigquery table '
                                  'unused_table still exists'):
       utils.delete_bq_table('unused_project',

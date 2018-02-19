@@ -16,9 +16,9 @@
 #
 """Tests for apache_beam.runners.worker.sdk_worker_main."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
+
+
+
 
 import json
 import logging
@@ -35,7 +35,7 @@ class SdkWorkerMainTest(unittest.TestCase):
     def wrapped_method_for_test():
       lines = sdk_worker_main.StatusServer.get_thread_dump()
       threaddump = '\n'.join(lines)
-      self.assertRegexpMatches(threaddump, '.*wrapped_method_for_test.*')
+      self.assertRegex(threaddump, '.*wrapped_method_for_test.*')
 
     wrapped_method_for_test()
 
@@ -63,7 +63,7 @@ class SdkWorkerMainTest(unittest.TestCase):
       self.assertRaises(Exception, sdk_worker_main._get_worker_count,
                         json.loads(pipeline_options))
     else:
-      self.assertEquals(
+      self.assertEqual(
           sdk_worker_main._get_worker_count(json.loads(pipeline_options)),
           expected)
 

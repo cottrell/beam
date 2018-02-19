@@ -52,7 +52,7 @@ class TestReadStringsFromPubSubOverride(unittest.TestCase):
                                      None, 'a_label')
              | beam.Map(lambda x: x))
     # Ensure that the output type is str.
-    self.assertEqual(unicode, pcoll.element_type)
+    self.assertEqual(str, pcoll.element_type)
 
     # Apply the necessary PTransformOverrides.
     overrides = _get_transform_overrides(p.options)
@@ -76,7 +76,7 @@ class TestReadStringsFromPubSubOverride(unittest.TestCase):
                  'a_label')
              | beam.Map(lambda x: x))
     # Ensure that the output type is str
-    self.assertEqual(unicode, pcoll.element_type)
+    self.assertEqual(str, pcoll.element_type)
 
     # Apply the necessary PTransformOverrides.
     overrides = _get_transform_overrides(p.options)
@@ -92,12 +92,12 @@ class TestReadStringsFromPubSubOverride(unittest.TestCase):
     self.assertEqual('a_label', source.id_label)
 
   def test_expand_with_no_topic_or_subscription(self):
-    with self.assertRaisesRegexp(
+    with self.assertRaisesRegex(
         ValueError, "Either a topic or subscription must be provided."):
       ReadStringsFromPubSub(None, None, 'a_label')
 
   def test_expand_with_both_topic_and_subscription(self):
-    with self.assertRaisesRegexp(
+    with self.assertRaisesRegex(
         ValueError, "Only one of topic or subscription should be provided."):
       ReadStringsFromPubSub('a_topic', 'a_subscription', 'a_label')
 

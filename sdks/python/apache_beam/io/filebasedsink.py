@@ -17,7 +17,7 @@
 
 """File-based sink."""
 
-from __future__ import absolute_import
+
 
 import logging
 import os
@@ -73,10 +73,10 @@ class FileBasedSink(iobase.Sink):
       ~exceptions.ValueError: if **shard_name_template** is not of expected
         format.
     """
-    if not isinstance(file_path_prefix, (basestring, ValueProvider)):
+    if not isinstance(file_path_prefix, (str, ValueProvider)):
       raise TypeError('file_path_prefix must be a string or ValueProvider;'
                       'got %r instead' % file_path_prefix)
-    if not isinstance(file_name_suffix, (basestring, ValueProvider)):
+    if not isinstance(file_name_suffix, (str, ValueProvider)):
       raise TypeError('file_name_suffix must be a string or ValueProvider;'
                       'got %r instead' % file_name_suffix)
 
@@ -87,9 +87,9 @@ class FileBasedSink(iobase.Sink):
       shard_name_template = DEFAULT_SHARD_NAME_TEMPLATE
     elif shard_name_template == '':
       num_shards = 1
-    if isinstance(file_path_prefix, basestring):
+    if isinstance(file_path_prefix, str):
       file_path_prefix = StaticValueProvider(str, file_path_prefix)
-    if isinstance(file_name_suffix, basestring):
+    if isinstance(file_name_suffix, str):
       file_name_suffix = StaticValueProvider(str, file_name_suffix)
     self.file_path_prefix = file_path_prefix
     self.file_name_suffix = file_name_suffix
@@ -221,7 +221,7 @@ class FileBasedSink(iobase.Sink):
       except BeamIOError as exp:
         if exp.exception_details is None:
           raise
-        for (src, dest), exception in exp.exception_details.iteritems():
+        for (src, dest), exception in exp.exception_details.items():
           if exception:
             logging.warning('Rename not successful: %s -> %s, %s', src, dest,
                             exception)
@@ -243,7 +243,7 @@ class FileBasedSink(iobase.Sink):
         return exceptions
 
     exception_batches = util.run_using_threadpool(
-        _rename_batch, zip(source_file_batch, destination_file_batch),
+        _rename_batch, list(zip(source_file_batch, destination_file_batch)),
         num_threads)
 
     all_exceptions = [e for exception_batch in exception_batches

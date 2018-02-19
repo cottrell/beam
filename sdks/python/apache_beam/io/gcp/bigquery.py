@@ -110,7 +110,7 @@ TableCell: Holds the value for one cell (or field).  Has one attribute,
   apitools.base.py.extra_types.py module.
 """
 
-from __future__ import absolute_import
+
 
 import collections
 import datetime
@@ -200,8 +200,8 @@ class TableRowJsonCoder(coders.Coder):
     try:
       return json.dumps(
           collections.OrderedDict(
-              zip(self.field_names,
-                  [from_json_value(f.v) for f in table_row.f])),
+              list(zip(self.field_names,
+                  [from_json_value(f.v) for f in table_row.f]))),
           allow_nan=False)
     except ValueError as e:
       raise ValueError('%s. %s' % (e, JSON_COMPLIANCE_ERROR))
@@ -210,7 +210,7 @@ class TableRowJsonCoder(coders.Coder):
     od = json.loads(
         encoded_table_row, object_pairs_hook=collections.OrderedDict)
     return bigquery.TableRow(
-        f=[bigquery.TableCell(v=to_json_value(e)) for e in od.itervalues()])
+        f=[bigquery.TableCell(v=to_json_value(e)) for e in od.values()])
 
 
 def parse_table_schema_from_json(schema_string):
@@ -522,7 +522,7 @@ bigquery_v2_messages.TableSchema` object.
 
     self.table_reference = _parse_table_reference(table, dataset, project)
     # Transform the table schema into a bigquery.TableSchema instance.
-    if isinstance(schema, basestring):
+    if isinstance(schema, str):
       # TODO(silviuc): Should add a regex-based validation of the format.
       table_schema = bigquery.TableSchema()
       schema_list = [s.strip(' ') for s in schema.split(',')]
@@ -1101,7 +1101,7 @@ class BigQueryWrapper(object):
     final_rows = []
     for row in rows:
       json_object = bigquery.JsonObject()
-      for k, v in row.iteritems():
+      for k, v in row.items():
         json_object.additionalProperties.append(
             bigquery.JsonObject.AdditionalProperty(
                 key=k, value=to_json_value(v)))
@@ -1413,7 +1413,7 @@ bigquery_v2_messages.TableSchema):
       return schema
     elif schema is None:
       return schema
-    elif isinstance(schema, basestring):
+    elif isinstance(schema, str):
       table_schema = WriteToBigQuery.get_table_schema_from_string(schema)
       return WriteToBigQuery.table_schema_to_dict(table_schema)
     elif isinstance(schema, bigquery.TableSchema):

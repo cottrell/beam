@@ -19,8 +19,8 @@
 
 For internal use only; no backwards-compatibility guarantees.
 """
-from __future__ import absolute_import
-from __future__ import print_function
+
+
 
 import collections
 import dis
@@ -64,8 +64,8 @@ def instance_to_type(o):
     ]
   elif t == dict:
     return typehints.Dict[
-        typehints.Union[[instance_to_type(k) for k, v in o.items()]],
-        typehints.Union[[instance_to_type(v) for k, v in o.items()]],
+        typehints.Union[[instance_to_type(k) for k, v in list(o.items())]],
+        typehints.Union[[instance_to_type(v) for k, v in list(o.items())]],
     ]
   else:
     raise TypeInferenceError('Unknown forbidden type: %s' % t)
@@ -286,7 +286,7 @@ def infer_return_type_func(f, input_types, debug=False, depth=0):
     print()
     print(f, id(f), input_types)
   from . import opcodes
-  simple_ops = dict((k.upper(), v) for k, v in opcodes.__dict__.items())
+  simple_ops = dict((k.upper(), v) for k, v in list(opcodes.__dict__.items()))
 
   co = f.__code__
   code = co.co_code
@@ -434,7 +434,7 @@ def infer_return_type_func(f, input_types, debug=False, depth=0):
     if debug:
       print()
       print(state)
-      pprint.pprint(dict(item for item in states.items() if item[1]))
+      pprint.pprint(dict(item for item in list(states.items()) if item[1]))
 
   if yields:
     result = typehints.Iterable[reduce(union, Const.unwrap_all(yields))]

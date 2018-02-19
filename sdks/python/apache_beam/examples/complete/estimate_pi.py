@@ -24,7 +24,7 @@ square. A simple area calculation shows that this fraction should be π/4, so
 we multiply our counts ratio by four to estimate π.
 """
 
-from __future__ import absolute_import
+
 
 import argparse
 import json

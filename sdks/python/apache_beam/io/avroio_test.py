@@ -269,13 +269,13 @@ class TestAvro(unittest.TestCase):
 
     # When reading records of the first block, range_tracker.split_points()
     # should return (0, iobase.RangeTracker.SPLIT_POINTS_UNKNOWN)
-    self.assertEquals(
+    self.assertEqual(
         split_points_report[:10],
         [(0, iobase.RangeTracker.SPLIT_POINTS_UNKNOWN)] * 10)
 
     # When reading records of last block, range_tracker.split_points() should
     # return (2, 1)
-    self.assertEquals(split_points_report[-10:], [(2, 1)] * 10)
+    self.assertEqual(split_points_report[-10:], [(2, 1)] * 10)
 
   def test_read_without_splitting_compressed_deflate(self):
     file_name = self._write_data(codec='deflate')

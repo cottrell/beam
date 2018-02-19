@@ -28,7 +28,7 @@ per line in the following format:
   [TEAM_NAME, POINTS]
 """
 
-from __future__ import absolute_import
+
 
 import argparse
 import json

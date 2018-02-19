@@ -22,7 +22,7 @@ fields. Also, shows how to generate data to be written to a BigQuery table with
 nested and repeated fields.
 """
 
-from __future__ import absolute_import
+
 
 import argparse
 import logging

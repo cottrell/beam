@@ -64,8 +64,8 @@ python hourly_team_score.py \
     --temp_location gs://$BUCKET/user_score/temp
 """
 
-from __future__ import absolute_import
-from __future__ import print_function
+
+
 
 import argparse
 import csv

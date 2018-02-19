@@ -17,14 +17,14 @@
 
 """Implementation of DataChannels for communicating across the data plane."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
+
+
+
 
 import abc
 import collections
 import logging
-import Queue as queue
+import queue as queue
 import sys
 import threading
 
@@ -49,7 +49,7 @@ class ClosableOutputStream(type(coder_impl.create_OutputStream())):
       self._close_callback(self.get())
 
 
-class DataChannel(object):
+class DataChannel(object, metaclass=abc.ABCMeta):
   """Represents a channel for reading and writing data over the data plane.
 
   Read from this channel with the input_elements method::
@@ -67,8 +67,6 @@ class DataChannel(object):
 
     data_channel.close()
   """
-
-  __metaclass__ = abc.ABCMeta
 
   @abc.abstractmethod
   def input_elements(self, instruction_id, expected_targets):
@@ -182,7 +180,7 @@ class _GrpcDataChannel(DataChannel):
           data = received.get(timeout=1)
         except queue.Empty:
           if self._exc_info:
-            raise self.exc_info[0], self.exc_info[1], self.exc_info[2]
+            raise self.exc_info[0](self.exc_info[1]).with_traceback(self.exc_info[2])
         else:
           if not data.data and data.target in expected_targets:
             done_targets.append(data.target)
@@ -270,10 +268,8 @@ class GrpcServerDataChannel(
       yield elements
 
 
-class DataChannelFactory(object):
+class DataChannelFactory(object, metaclass=abc.ABCMeta):
   """An abstract factory for creating ``DataChannel``."""
-
-  __metaclass__ = abc.ABCMeta
 
   @abc.abstractmethod
   def create_data_channel(self, remote_grpc_port):
@@ -315,7 +311,7 @@ class GrpcClientDataChannelFactory(DataChannelFactory):
 
   def close(self):
     logging.info('Closing all cached grpc data channels.')
-    for _, channel in self._data_channel_cache.items():
+    for _, channel in list(self._data_channel_cache.items()):
       channel.close()
     self._data_channel_cache.clear()
 

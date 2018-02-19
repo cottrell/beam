@@ -87,7 +87,7 @@ class DataflowRunnerTest(unittest.TestCase):
         self.dataflow_client.list_messages = mock.MagicMock(
             return_value=([], None))
 
-    with self.assertRaisesRegexp(
+    with self.assertRaisesRegex(
         DataflowRuntimeException, 'Dataflow pipeline failed. State: FAILED'):
       failed_runner = MockDataflowRunner([values_enum.JOB_STATE_FAILED])
       failed_result = DataflowPipelineResult(failed_runner.job, failed_runner)
@@ -118,7 +118,7 @@ class DataflowRunnerTest(unittest.TestCase):
       self.assertEqual(result, PipelineState.RUNNING)
 
     with mock.patch('time.time', mock.MagicMock(side_effect=[1, 1, 2, 2, 3])):
-      with self.assertRaisesRegexp(
+      with self.assertRaisesRegex(
           DataflowRuntimeException,
           'Dataflow pipeline failed. State: CANCELLED'):
         duration_failed_runner = MockDataflowRunner(
@@ -144,7 +144,7 @@ class DataflowRunnerTest(unittest.TestCase):
         self.dataflow_client.list_messages = mock.MagicMock(
             return_value=([], None))
 
-    with self.assertRaisesRegexp(
+    with self.assertRaisesRegex(
         DataflowRuntimeException, 'Failed to cancel job'):
       failed_runner = MockDataflowRunner(values_enum.JOB_STATE_RUNNING, False)
       failed_result = DataflowPipelineResult(failed_runner.job, failed_runner)
@@ -185,13 +185,13 @@ class DataflowRunnerTest(unittest.TestCase):
     p | ptransform.Create([1])  # pylint: disable=expression-not-assigned
     p.run()
     job_dict = json.loads(str(remote_runner.job))
-    self.assertEqual(len(job_dict[u'steps']), 2)
+    self.assertEqual(len(job_dict['steps']), 2)
 
-    self.assertEqual(job_dict[u'steps'][0][u'kind'], u'ParallelRead')
+    self.assertEqual(job_dict['steps'][0]['kind'], 'ParallelRead')
     self.assertEqual(
-        job_dict[u'steps'][0][u'properties'][u'pubsub_subscription'],
+        job_dict['steps'][0]['properties']['pubsub_subscription'],
         '_starting_signal/')
-    self.assertEqual(job_dict[u'steps'][1][u'kind'], u'ParallelDo')
+    self.assertEqual(job_dict['steps'][1]['kind'], 'ParallelDo')
 
   def test_remote_runner_display_data(self):
     remote_runner = DataflowRunner()
@@ -289,7 +289,7 @@ class DataflowRunnerTest(unittest.TestCase):
       pcoll2.element_type = typehints.Set
       err_msg = "Input to GroupByKey must be of Tuple or Any type"
       for pcoll in [pcoll1, pcoll2]:
-        with self.assertRaisesRegexp(ValueError, err_msg):
+        with self.assertRaisesRegex(ValueError, err_msg):
           DataflowRunner.group_by_key_input_visitor().visit_transform(
               AppliedPTransform(None, transform, "label", [pcoll]))
 

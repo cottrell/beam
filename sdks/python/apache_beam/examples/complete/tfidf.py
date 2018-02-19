@@ -21,7 +21,7 @@ For an explanation of the TF-IDF algorithm see the following link:
 http://en.wikipedia.org/wiki/Tf-idf
 """
 
-from __future__ import absolute_import
+
 
 import argparse
 import glob

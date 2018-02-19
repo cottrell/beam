@@ -17,7 +17,7 @@
 
 """A factory that creates UncommittedBundles."""
 
-from __future__ import absolute_import
+
 
 from apache_beam import pvalue
 from apache_beam.runners import common

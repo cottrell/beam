@@ -3747,7 +3747,7 @@ class StandardQueryParameters(_messages.Message):
 
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
   access_token = _messages.StringField(2)
-  alt = _messages.EnumField('AltValueValuesEnum', 3, default=u'json')
+  alt = _messages.EnumField('AltValueValuesEnum', 3, default='json')
   bearer_token = _messages.StringField(4)
   callback = _messages.StringField(5)
   fields = _messages.StringField(6)
@@ -4544,7 +4544,7 @@ class WorkerMessage(_messages.Message):
   Messages:
     LabelsValue: Labels are used to group WorkerMessages. For example, a
       worker_message about a particular container might have the labels: {
-      "JOB_ID": "2015-04-22",   "WORKER_ID": "wordcount-vm-2015\u2026"
+      "JOB_ID": "2015-04-22",   "WORKER_ID": "wordcount-vm-2015\\u2026"
       "CONTAINER_TYPE": "worker",   "CONTAINER_ID": "ac1234def"} Label tags
       typically correspond to Label enum values. However, for ease of
       development other strings can be used as tags. LABEL_UNSPECIFIED should
@@ -4553,7 +4553,7 @@ class WorkerMessage(_messages.Message):
   Fields:
     labels: Labels are used to group WorkerMessages. For example, a
       worker_message about a particular container might have the labels: {
-      "JOB_ID": "2015-04-22",   "WORKER_ID": "wordcount-vm-2015\u2026"
+      "JOB_ID": "2015-04-22",   "WORKER_ID": "wordcount-vm-2015\\u2026"
       "CONTAINER_TYPE": "worker",   "CONTAINER_ID": "ac1234def"} Label tags
       typically correspond to Label enum values. However, for ease of
       development other strings can be used as tags. LABEL_UNSPECIFIED should
@@ -4569,7 +4569,7 @@ class WorkerMessage(_messages.Message):
   class LabelsValue(_messages.Message):
     """Labels are used to group WorkerMessages. For example, a worker_message
     about a particular container might have the labels: { "JOB_ID":
-    "2015-04-22",   "WORKER_ID": "wordcount-vm-2015\u2026"   "CONTAINER_TYPE":
+    "2015-04-22",   "WORKER_ID": "wordcount-vm-2015\\u2026"   "CONTAINER_TYPE":
     "worker",   "CONTAINER_ID": "ac1234def"} Label tags typically correspond
     to Label enum values. However, for ease of development other strings can
     be used as tags. LABEL_UNSPECIFIED should not be used here.
@@ -4980,10 +4980,10 @@ class WriteInstruction(_messages.Message):
 
 encoding.AddCustomJsonFieldMapping(
     StandardQueryParameters, 'f__xgafv', '$.xgafv',
-    package=u'dataflow')
+    package='dataflow')
 encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_1', '1',
-    package=u'dataflow')
+    package='dataflow')
 encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_2', '2',
-    package=u'dataflow')
+    package='dataflow')

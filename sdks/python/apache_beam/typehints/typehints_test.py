@@ -53,7 +53,7 @@ def check_type_hints(f):
       input_hints = getcallargs_forhints(
           f, *hints.input_types[0], **hints.input_types[1])
       inputs = inspect.getcallargs(f, *args, **kwargs)
-      for var, hint in input_hints.items():
+      for var, hint in list(input_hints.items()):
         value = inputs[var]
         new_value = check_or_interleave(hint, value, var)
         if new_value is not value:
@@ -1040,20 +1040,20 @@ class DecoratorHelpers(TypeHintTestCase):
     self.assertFalse(is_consistent_with(Union[str, int], str))
 
   def test_positional_arg_hints(self):
-    self.assertEquals(typehints.Any, _positional_arg_hints('x', {}))
-    self.assertEquals(int, _positional_arg_hints('x', {'x': int}))
-    self.assertEquals(typehints.Tuple[int, typehints.Any],
+    self.assertEqual(typehints.Any, _positional_arg_hints('x', {}))
+    self.assertEqual(int, _positional_arg_hints('x', {'x': int}))
+    self.assertEqual(typehints.Tuple[int, typehints.Any],
                       _positional_arg_hints(['x', 'y'], {'x': int}))
 
   def test_getcallargs_forhints(self):
     func = lambda a, (b, c), *d: None
-    self.assertEquals(
+    self.assertEqual(
         {'a': Any, 'b': Any, 'c': Any, 'd': Tuple[Any, ...]},
         getcallargs_forhints(func, *[Any, Any]))
-    self.assertEquals(
+    self.assertEqual(
         {'a': Any, 'b': Any, 'c': Any, 'd': Tuple[Any, ...]},
         getcallargs_forhints(func, *[Any, Any, Any, int]))
-    self.assertEquals(
+    self.assertEqual(
         {'a': int, 'b': str, 'c': Any, 'd': Tuple[Any, ...]},
         getcallargs_forhints(func, *[int, Tuple[str, Any]]))
 

@@ -24,7 +24,7 @@ directly by pipeline writers. Instead, users should use the helper methods
 AsSingleton, AsIter, AsList and AsDict in apache_beam.pvalue.
 """
 
-from __future__ import absolute_import
+
 
 from apache_beam.transforms import window
 

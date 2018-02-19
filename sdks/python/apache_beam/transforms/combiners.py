@@ -17,7 +17,7 @@
 
 """A library of basic combiner PTransform subclasses."""
 
-from __future__ import absolute_import
+
 
 import operator
 import random
@@ -37,7 +37,7 @@ from apache_beam.typehints import with_input_types
 from apache_beam.typehints import with_output_types
 
 try:
-  long        # Python 2
+  int        # Python 2
 except NameError:
   long = int  # Python 3
 
@@ -74,7 +74,7 @@ class Mean(object):
 
 # TODO(laolu): This type signature is overly restrictive. This should be
 # more general.
-@with_input_types(Union[float, int, long])
+@with_input_types(Union[float, int, int])
 @with_output_types(float)
 class MeanCombineFn(core.CombineFn):
   """CombineFn for computing an arithmetic mean."""
@@ -87,7 +87,7 @@ class MeanCombineFn(core.CombineFn):
     return sum_ + element, count + 1
 
   def merge_accumulators(self, accumulators):
-    sums, counts = zip(*accumulators)
+    sums, counts = list(zip(*accumulators))
     return sum(sums), sum(counts)
 
   def extract_output(self, sum_count):
@@ -438,7 +438,7 @@ class _TupleCombineFnBase(core.CombineFn):
 
   def merge_accumulators(self, accumulators):
     return [c.merge_accumulators(a)
-            for c, a in zip(self._combiners, zip(*accumulators))]
+            for c, a in zip(self._combiners, list(zip(*accumulators)))]
 
   def extract_output(self, accumulator):
     return tuple([c.extract_output(a)

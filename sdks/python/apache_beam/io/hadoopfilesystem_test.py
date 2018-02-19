@@ -17,7 +17,7 @@
 
 """Unit tests for :class:`HadoopFileSystem`."""
 
-from __future__ import absolute_import
+
 
 import io
 import posixpath
@@ -116,7 +116,7 @@ class FakeHdfs(object):
       raise ValueError('list must be called on a directory, got file: %s', path)
 
     result = []
-    for file in self.files.itervalues():
+    for file in self.files.values():
       if file.stat['path'].startswith(path):
         fs = file.get_file_status()
         result.append((fs[hdfs._FILE_STATUS_PATH_SUFFIX], fs))
@@ -140,7 +140,7 @@ class FakeHdfs(object):
 
     _ = self.status(path)
 
-    for filepath in self.files.keys():  # pylint: disable=consider-iterating-dictionary
+    for filepath in list(self.files.keys()):  # pylint: disable=consider-iterating-dictionary
       if filepath.startswith(path):
         del self.files[filepath]
 
@@ -168,7 +168,7 @@ class FakeHdfs(object):
     if self.status(path1, strict=False) is None:
       raise FakeHdfsError('Path1 not found: %s' % path1)
 
-    for fullpath in self.files.keys():  # pylint: disable=consider-iterating-dictionary
+    for fullpath in list(self.files.keys()):  # pylint: disable=consider-iterating-dictionary
       if fullpath == path1 or fullpath.startswith(path1 + '/'):
         f = self.files.pop(fullpath)
         newpath = path2 + fullpath[len(path1):]
@@ -216,7 +216,7 @@ class HadoopFileSystemTest(unittest.TestCase):
                      self.fs.split('hdfs://tmp/path/to/file'))
     self.assertEqual(('hdfs://', 'tmp'), self.fs.split('hdfs://tmp'))
     self.assertEqual(('hdfs://tmp', ''), self.fs.split('hdfs://tmp/'))
-    with self.assertRaisesRegexp(ValueError, r'parse'):
+    with self.assertRaisesRegex(ValueError, r'parse'):
       self.fs.split('tmp')
 
   def test_mkdirs(self):
@@ -251,15 +251,15 @@ class HadoopFileSystemTest(unittest.TestCase):
                       for filename in ['old_file1', 'old_file2']]
     result = self.fs.match([self.tmpdir], [1])[0]
     files = [f.path for f in result.metadata_list]
-    self.assertEquals(len(files), 1)
+    self.assertEqual(len(files), 1)
     self.assertIn(files[0], expected_files)
 
   def test_match_file_with_zero_limit(self):
     result = self.fs.match([self.tmpdir], [0])[0]
-    self.assertEquals(len(result.metadata_list), 0)
+    self.assertEqual(len(result.metadata_list), 0)
 
   def test_match_file_with_bad_limit(self):
-    with self.assertRaisesRegexp(BeamIOError, r'TypeError'):
+    with self.assertRaisesRegex(BeamIOError, r'TypeError'):
       _ = self.fs.match([self.tmpdir], ['a'])[0]
 
   def test_match_file_empty(self):
@@ -271,7 +271,7 @@ class HadoopFileSystemTest(unittest.TestCase):
   def test_match_file_error(self):
     url = self.fs.join(self.tmpdir, 'old_file1')
     bad_url = 'bad_url'
-    with self.assertRaisesRegexp(BeamIOError,
+    with self.assertRaisesRegex(BeamIOError,
                                  r'^Match operation failed .* %s' % bad_url):
       result = self.fs.match([bad_url, url])[0]
       files = [f.path for f in result.metadata_list]
@@ -312,7 +312,7 @@ class HadoopFileSystemTest(unittest.TestCase):
     data = 'abc' * 10
     handle.write(data)
     # Compressed data != original data
-    self.assertNotEquals(data, self._fake_hdfs.files[path].getvalue())
+    self.assertNotEqual(data, self._fake_hdfs.files[path].getvalue())
     handle.close()
 
     handle = self.fs.open(url)
@@ -355,7 +355,7 @@ class HadoopFileSystemTest(unittest.TestCase):
       f1.write('Hello')
     with self.fs.create(url2) as f2:
       f2.write('nope')
-    with self.assertRaisesRegexp(
+    with self.assertRaisesRegex(
         BeamIOError, r'already exists.*%s' % posixpath.basename(url2)):
       self.fs.copy([url1], [url2])
 
@@ -366,7 +366,7 @@ class HadoopFileSystemTest(unittest.TestCase):
     url4 = self.fs.join(self.tmpdir, 'new_file4')
     with self.fs.create(url3) as f:
       f.write('Hello')
-    with self.assertRaisesRegexp(
+    with self.assertRaisesRegex(
         BeamIOError, r'^Copy operation failed .*%s.*%s.* not found' % (
             url1, url2)):
       self.fs.copy([url1, url3], [url2, url4])
@@ -410,7 +410,7 @@ class HadoopFileSystemTest(unittest.TestCase):
     with self.fs.create(url2) as f:
       f.write('nope')
 
-    with self.assertRaisesRegexp(BeamIOError, r'already exists'):
+    with self.assertRaisesRegex(BeamIOError, r'already exists'):
       self.fs.copy([url_t1], [url_t2])
 
   def test_rename_file(self):
@@ -431,7 +431,7 @@ class HadoopFileSystemTest(unittest.TestCase):
     with self.fs.create(url3) as f:
       f.write('Hello')
 
-    with self.assertRaisesRegexp(
+    with self.assertRaisesRegex(
         BeamIOError, r'^Rename operation failed .*%s.*%s' % (url1, url2)):
       self.fs.rename([url1, url3], [url2, url4])
     self.assertFalse(self.fs.exists(url3))
@@ -489,7 +489,7 @@ class HadoopFileSystemTest(unittest.TestCase):
 
     self.assertTrue(self.fs.exists(url2))
     path1 = self.fs._parse_url(url1)
-    with self.assertRaisesRegexp(BeamIOError,
+    with self.assertRaisesRegex(BeamIOError,
                                  r'^Delete operation failed .* %s' % path1):
       self.fs.delete([url1, url2])
     self.assertFalse(self.fs.exists(url2))

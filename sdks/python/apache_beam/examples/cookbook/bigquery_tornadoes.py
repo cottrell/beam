@@ -32,7 +32,7 @@ This example uses the default behavior for BigQuery source and sinks that
 represents table rows as plain Python dictionaries.
 """
 
-from __future__ import absolute_import
+
 
 import argparse
 import logging

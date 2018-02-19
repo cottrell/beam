@@ -249,7 +249,7 @@ class TestGCSIO(unittest.TestCase):
     self._insert_random_file(self.client, file_name, file_size)
     with self.assertRaises(HttpError) as cm:
       self.gcs.exists(file_name)
-    self.assertEquals(400, cm.exception.status_code)
+    self.assertEqual(400, cm.exception.status_code)
 
   def test_size(self):
     file_name = 'gs://gcsio-test/dummy_file'

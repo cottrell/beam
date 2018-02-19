@@ -44,7 +44,7 @@ using the Google Cloud Dataflow Service. No args are required to run the
 pipeline. You can see the results in your output bucket in the GCS browser.
 """
 
-from __future__ import absolute_import
+
 
 import argparse
 import logging
@@ -101,7 +101,7 @@ def run(argv=None):
     counts = (
         lines
         | 'Split' >> (beam.FlatMap(lambda x: re.findall(r'[A-Za-z\']+', x))
-                      .with_output_types(unicode))
+                      .with_output_types(str))
         | 'PairWithOne' >> beam.Map(lambda x: (x, 1))
         | 'GroupAndSum' >> beam.CombinePerKey(sum))
 

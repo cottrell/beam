@@ -19,10 +19,10 @@
 
 Only those coders listed in __all__ are part of the public API of this module.
 """
-from __future__ import absolute_import
+
 
 import base64
-import cPickle as pickle
+import pickle as pickle
 
 import google.protobuf
 from google.protobuf import wrappers_pb2
@@ -309,7 +309,7 @@ class ToStringCoder(Coder):
   """A default string coder used if no sink coder is specified."""
 
   def encode(self, value):
-    if isinstance(value, unicode):
+    if isinstance(value, str):
       return value.encode('utf-8')
     elif isinstance(value, str):
       return value

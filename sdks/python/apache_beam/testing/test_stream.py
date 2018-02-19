@@ -41,10 +41,8 @@ __all__ = [
     ]
 
 
-class Event(object):
+class Event(object, metaclass=ABCMeta):
   """Test stream event to be emitted during execution of a TestStream."""
-
-  __metaclass__ = ABCMeta
 
   def __cmp__(self, other):
     if type(self) is not type(other):

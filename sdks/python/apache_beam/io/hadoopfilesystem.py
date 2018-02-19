@@ -18,7 +18,7 @@
 """:class:`~apache_beam.io.filesystem.FileSystem` implementation for accessing
 Hadoop Distributed File System files."""
 
-from __future__ import absolute_import
+
 
 import io
 import logging

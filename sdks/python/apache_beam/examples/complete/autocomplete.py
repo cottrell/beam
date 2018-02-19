@@ -17,7 +17,7 @@
 
 """A workflow emitting the top k most common words for each prefix."""
 
-from __future__ import absolute_import
+
 
 import argparse
 import logging

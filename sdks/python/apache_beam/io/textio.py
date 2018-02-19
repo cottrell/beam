@@ -18,7 +18,7 @@
 """A source and a sink for reading from and writing to text files."""
 
 
-from __future__ import absolute_import
+
 
 import logging
 from functools import partial

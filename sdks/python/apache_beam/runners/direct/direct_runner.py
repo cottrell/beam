@@ -21,7 +21,7 @@ The DirectRunner is a runner implementation that executes the entire
 graph of transformations belonging to a pipeline on the local machine.
 """
 
-from __future__ import absolute_import
+
 
 import itertools
 import logging
@@ -108,7 +108,7 @@ class SwitchingDirectRunner(PipelineRunner):
           if isinstance(dofn, CombineValuesDoFn):
             args, kwargs = transform.raw_side_inputs
             args_to_check = itertools.chain(args,
-                                            kwargs.values())
+                                            list(kwargs.values()))
             if any(isinstance(arg, ArgumentPlaceholder)
                    for arg in args_to_check):
               self.supported_by_fnapi_runner = False

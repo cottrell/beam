@@ -22,7 +22,7 @@ pipelines, during remote execution.
 This API is currently under development and is subject to change.
 """
 
-from __future__ import absolute_import
+
 
 import re
 
@@ -72,7 +72,7 @@ class ReadStringsFromPubSub(PTransform):
     pcoll = pvalue.pipeline | Read(self._source)
     pcoll.element_type = bytes
     pcoll = pcoll | 'DecodeString' >> Map(lambda b: b.decode('utf-8'))
-    pcoll.element_type = unicode
+    pcoll.element_type = str
     return pcoll
 
 

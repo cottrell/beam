@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-from __future__ import print_function
+
 
 import unittest
 
@@ -179,7 +179,7 @@ class DatastoreioTest(unittest.TestCase):
       entities = [e.entity for e in
                   fake_datastore.create_entities(num_entities)]
 
-      expected_mutations = map(WriteToDatastore.to_upsert_mutation, entities)
+      expected_mutations = list(map(WriteToDatastore.to_upsert_mutation, entities))
       actual_mutations = []
 
       self._mock_datastore.commit.side_effect = (
@@ -209,7 +209,7 @@ class DatastoreioTest(unittest.TestCase):
       datastore_write_fn.start_bundle()
       for entity in entities:
         datastore_helper.add_properties(
-            entity, {'large': u'A' * 100000}, exclude_from_indexes=True)
+            entity, {'large': 'A' * 100000}, exclude_from_indexes=True)
         datastore_write_fn.process(WriteToDatastore.to_upsert_mutation(entity))
       datastore_write_fn.finish_bundle()
 
@@ -217,7 +217,7 @@ class DatastoreioTest(unittest.TestCase):
 
   def verify_unique_keys(self, queries):
     """A helper function that verifies if all the queries have unique keys."""
-    keys, _ = zip(*queries)
+    keys, _ = list(zip(*queries))
     keys = set(keys)
     self.assertEqual(len(keys), len(queries))
 
@@ -275,31 +275,31 @@ class DynamicWriteBatcherTest(unittest.TestCase):
   # If possible, keep these test cases aligned with the Java test cases in
   # DatastoreV1Test.java
   def test_no_data(self):
-    self.assertEquals(_Mutate._WRITE_BATCH_INITIAL_SIZE,
+    self.assertEqual(_Mutate._WRITE_BATCH_INITIAL_SIZE,
                       self._batcher.get_batch_size(0))
 
   def test_fast_queries(self):
     self._batcher.report_latency(0, 1000, 200)
     self._batcher.report_latency(0, 1000, 200)
-    self.assertEquals(_Mutate._WRITE_BATCH_MAX_SIZE,
+    self.assertEqual(_Mutate._WRITE_BATCH_MAX_SIZE,
                       self._batcher.get_batch_size(0))
 
   def test_slow_queries(self):
     self._batcher.report_latency(0, 10000, 200)
     self._batcher.report_latency(0, 10000, 200)
-    self.assertEquals(100, self._batcher.get_batch_size(0))
+    self.assertEqual(100, self._batcher.get_batch_size(0))
 
   def test_size_not_below_minimum(self):
     self._batcher.report_latency(0, 30000, 50)
     self._batcher.report_latency(0, 30000, 50)
-    self.assertEquals(_Mutate._WRITE_BATCH_MIN_SIZE,
+    self.assertEqual(_Mutate._WRITE_BATCH_MIN_SIZE,
                       self._batcher.get_batch_size(0))
 
   def test_sliding_window(self):
     self._batcher.report_latency(0, 30000, 50)
     self._batcher.report_latency(50000, 5000, 200)
     self._batcher.report_latency(100000, 5000, 200)
-    self.assertEquals(200, self._batcher.get_batch_size(150000))
+    self.assertEqual(200, self._batcher.get_batch_size(150000))
 
 
 if __name__ == '__main__':

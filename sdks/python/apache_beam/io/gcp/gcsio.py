@@ -20,7 +20,7 @@ This library evolved from the Google App Engine GCS client available at
 https://github.com/GoogleCloudPlatform/appengine-gcs-client.
 """
 
-import cStringIO
+import io
 import errno
 import fnmatch
 import io
@@ -490,7 +490,7 @@ class GcsDownloader(Downloader):
     self._get_request.generation = metadata.generation
 
     # Initialize read buffer state.
-    self._download_stream = cStringIO.StringIO()
+    self._download_stream = io.StringIO()
     self._downloader = transfer.Download(
         self._download_stream, auto_transfer=False, chunksize=self._buffer_size)
     self._client.objects.Get(self._get_request, download=self._downloader)

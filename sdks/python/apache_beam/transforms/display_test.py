@@ -17,7 +17,7 @@
 
 """Unit tests for the DisplayData API."""
 
-from __future__ import absolute_import
+
 
 import unittest
 from datetime import datetime
@@ -161,8 +161,8 @@ class DisplayDataTest(unittest.TestCase):
   def test_unicode_type_display_data(self):
     class MyDoFn(beam.DoFn):
       def display_data(self):
-        return {'unicode_string': unicode('my string'),
-                'unicode_literal_string': u'my literal string'}
+        return {'unicode_string': str('my string'),
+                'unicode_literal_string': 'my literal string'}
 
     fn = MyDoFn()
     dd = DisplayData.create_from(fn)

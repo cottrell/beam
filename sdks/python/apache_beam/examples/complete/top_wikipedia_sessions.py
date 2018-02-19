@@ -39,7 +39,7 @@ The default input is ``gs://dataflow-samples/wikipedia_edits/*.json`` and can
 be overridden with --input.
 """
 
-from __future__ import absolute_import
+
 
 import argparse
 import json

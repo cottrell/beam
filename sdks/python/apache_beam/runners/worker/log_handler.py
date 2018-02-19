@@ -18,7 +18,7 @@
 
 import logging
 import math
-import Queue as queue
+import queue as queue
 import threading
 
 import grpc

@@ -20,7 +20,7 @@
 The 4.2 spec is available at https://samtools.github.io/hts-specs/VCFv4.2.pdf.
 """
 
-from __future__ import absolute_import
+
 
 import logging
 import traceback
@@ -36,7 +36,7 @@ from apache_beam.io.textio import _TextSource as TextSource
 from apache_beam.transforms import PTransform
 
 try:
-  long        # Python 2
+  int        # Python 2
 except NameError:
   long = int  # Python 3
 
@@ -317,7 +317,7 @@ class _VcfSource(filebasedsource.FileBasedSource):
     def __iter__(self):
       return self
 
-    def next(self):
+    def __next__(self):
       try:
         record = next(self._vcf_reader)
         return self._convert_to_variant_record(record, self._vcf_reader.infos,
@@ -369,7 +369,7 @@ class _VcfSource(filebasedsource.FileBasedSource):
       if record.FILTER is not None:
         variant.filters.extend(
             record.FILTER if record.FILTER else [PASS_FILTER])
-      for k, v in record.INFO.iteritems():
+      for k, v in record.INFO.items():
         # Special case: END info value specifies end of the record, so adjust
         # variant.end and do not include it as part of variant.info.
         if k == END_INFO_KEY:
@@ -404,7 +404,7 @@ class _VcfSource(filebasedsource.FileBasedSource):
           # Note: this is already done for INFO fields in PyVCF.
           if (field in formats and
               formats[field].num is None and
-              isinstance(data, (int, float, long, basestring, bool))):
+              isinstance(data, (int, float, str, bool))):
             data = [data]
           call.info[field] = data
         variant.calls.append(call)
@@ -429,7 +429,7 @@ class _VcfSource(filebasedsource.FileBasedSource):
         return None
       elif field_count >= 0:
         return str(field_count)
-      field_count_to_string = {v: k for k, v in vcf.parser.field_counts.items()}
+      field_count_to_string = {v: k for k, v in list(vcf.parser.field_counts.items())}
       if field_count in field_count_to_string:
         return field_count_to_string[field_count]
       else:

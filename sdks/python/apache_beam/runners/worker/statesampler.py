@@ -76,6 +76,6 @@ class StateSampler(statesampler_impl.StateSampler):
 
   def commit_counters(self):
     """Updates output counters with latest state statistics."""
-    for state in self._states_by_name.values():
+    for state in list(self._states_by_name.values()):
       state_msecs = int(1e-6 * state.nsecs)
       state.counter.update(state_msecs - state.counter.value())

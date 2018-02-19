@@ -512,7 +512,7 @@ class DoFnRunner(Receiver):
           traceback.format_exception_only(type(exn), exn)[-1].strip()
           + step_annotation)
       new_exn._tagged_with_step = True
-    raise new_exn, None, original_traceback
+    raise new_exn.with_traceback(original_traceback)
 
 
 class OutputProcessor(object):
@@ -549,7 +549,7 @@ class _OutputProcessor(OutputProcessor):
       tag = None
       if isinstance(result, TaggedOutput):
         tag = result.tag
-        if not isinstance(tag, basestring):
+        if not isinstance(tag, str):
           raise TypeError('In %s, tag %s is not a string' % (self, tag))
         result = result.value
       if isinstance(result, WindowedValue):
@@ -591,7 +591,7 @@ class _OutputProcessor(OutputProcessor):
       tag = None
       if isinstance(result, TaggedOutput):
         tag = result.tag
-        if not isinstance(tag, basestring):
+        if not isinstance(tag, str):
           raise TypeError('In %s, tag %s is not a string' % (self, tag))
         result = result.value
 

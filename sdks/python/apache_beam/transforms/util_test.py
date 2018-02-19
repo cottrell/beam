@@ -60,7 +60,7 @@ class BatchElementsTest(unittest.TestCase):
     with TestPipeline() as p:
       res = (
           p
-          | beam.Create(range(35))
+          | beam.Create(list(range(35)))
           | util.BatchElements(min_batch_size=10, max_batch_size=10)
           | beam.Map(len))
       assert_that(res, equal_to([10, 10, 10, 5]))
@@ -70,7 +70,7 @@ class BatchElementsTest(unittest.TestCase):
     with TestPipeline() as p:
       res = (
           p
-          | beam.Create(range(164))
+          | beam.Create(list(range(164)))
           | util.BatchElements(
               min_batch_size=1, max_batch_size=50, clock=FakeClock())
           | beam.Map(len))
@@ -81,7 +81,7 @@ class BatchElementsTest(unittest.TestCase):
     with TestPipeline() as p:
       res = (
           p
-          | beam.Create(range(47))
+          | beam.Create(list(range(47)))
           | beam.Map(lambda t: window.TimestampedValue(t, t))
           | beam.WindowInto(window.FixedWindows(30))
           | util.BatchElements(
@@ -180,7 +180,7 @@ class IdentityWindowTest(unittest.TestCase):
                       | 'add_timestamps2' >> beam.ParDo(AddTimestampDoFn()))
     assert_that(after_identity, equal_to(expected_windows),
                 label='after_identity', reify_windows=True)
-    with self.assertRaisesRegexp(ValueError, r'window.*None.*add_timestamps2'):
+    with self.assertRaisesRegex(ValueError, r'window.*None.*add_timestamps2'):
       pipeline.run()
 
 

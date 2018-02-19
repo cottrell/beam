@@ -49,7 +49,7 @@ and an output prefix on GCS:::
   --output gs://YOUR_OUTPUT_PREFIX
 """
 
-from __future__ import absolute_import
+
 
 import argparse
 import logging

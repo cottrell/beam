@@ -44,7 +44,7 @@ Typical usage::
 
 """
 
-from __future__ import absolute_import
+
 
 import abc
 import collections
@@ -597,7 +597,7 @@ class Pipeline(object):
         context.transforms.get_by_id(root_transform_id)]
     # TODO(robertwb): These are only needed to continue construction. Omit?
     p.applied_labels = set([
-        t.unique_name for t in proto.components.transforms.values()])
+        t.unique_name for t in list(proto.components.transforms.values())])
     for id in proto.components.pcollections:
       pcollection = context.pcollections.get_by_id(id)
       pcollection.pipeline = p
@@ -732,7 +732,7 @@ class AppliedPTransform(object):
     is not a producer is one that returns its inputs instead.)
     """
     return bool(self.parts) or all(
-        pval.producer is not self for pval in self.outputs.values())
+        pval.producer is not self for pval in list(self.outputs.values()))
 
   def visit(self, visitor, pipeline, visited):
     """Visits all nodes reachable from the current node."""
@@ -772,7 +772,7 @@ class AppliedPTransform(object):
     # output of such a transform is the containing DoOutputsTuple, not the
     # PCollection inside it. Without the code below a tagged PCollection will
     # not be marked as visited while visiting its producer.
-    for pval in self.outputs.values():
+    for pval in list(self.outputs.values()):
       if isinstance(pval, pvalue.DoOutputsTuple):
         pvals = (v for v in pval)
       else:
@@ -792,7 +792,7 @@ class AppliedPTransform(object):
     return dict(main_inputs, **side_inputs)
 
   def named_outputs(self):
-    return {str(tag): output for tag, output in self.outputs.items()
+    return {str(tag): output for tag, output in list(self.outputs.items())
             if isinstance(output, pvalue.PCollection)}
 
   def to_runner_api(self, context):
@@ -809,9 +809,9 @@ class AppliedPTransform(object):
         subtransforms=[context.transforms.get_id(part, label=part.full_label)
                        for part in self.parts],
         inputs={tag: context.pcollections.get_id(pc)
-                for tag, pc in self.named_inputs().items()},
+                for tag, pc in list(self.named_inputs().items())},
         outputs={str(tag): context.pcollections.get_id(out)
-                 for tag, out in self.named_outputs().items()},
+                 for tag, out in list(self.named_outputs().items())},
         # TODO(BEAM-115): display_data
         display_data=None)
 
@@ -821,11 +821,11 @@ class AppliedPTransform(object):
       # As per named_inputs() above.
       return tag.startswith('side')
     main_inputs = [context.pcollections.get_by_id(id)
-                   for tag, id in proto.inputs.items()
+                   for tag, id in list(proto.inputs.items())
                    if not is_side_input(tag)]
     # Ordering is important here.
     indexed_side_inputs = [(int(tag[4:]), context.pcollections.get_by_id(id))
-                           for tag, id in proto.inputs.items()
+                           for tag, id in list(proto.inputs.items())
                            if is_side_input(tag)]
     side_inputs = [si for _, si in sorted(indexed_side_inputs)]
     result = AppliedPTransform(
@@ -844,14 +844,14 @@ class AppliedPTransform(object):
       result.parts.append(part)
     result.outputs = {
         None if tag == 'None' else tag: context.pcollections.get_by_id(id)
-        for tag, id in proto.outputs.items()}
+        for tag, id in list(proto.outputs.items())}
     # This annotation is expected by some runners.
     if proto.spec.urn == common_urns.PARDO_TRANSFORM:
       result.transform.output_tags = set(proto.outputs.keys()).difference(
           {'None'})
     if not result.parts:
-      for tag, pcoll_id in proto.outputs.items():
-        if pcoll_id not in proto.inputs.values():
+      for tag, pcoll_id in list(proto.outputs.items()):
+        if pcoll_id not in list(proto.inputs.values()):
           pc = context.pcollections.get_by_id(pcoll_id)
           pc.producer = result
           pc.tag = None if tag == 'None' else tag
@@ -859,7 +859,7 @@ class AppliedPTransform(object):
     return result
 
 
-class PTransformOverride(object):
+class PTransformOverride(object, metaclass=abc.ABCMeta):
   """For internal use only; no backwards-compatibility guarantees.
 
   Gives a matcher and replacements for matching PTransforms.
@@ -867,7 +867,6 @@ class PTransformOverride(object):
   TODO: Update this to support cases where input and/our output types are
   different.
   """
-  __metaclass__ = abc.ABCMeta
 
   @abc.abstractmethod
   def matches(self, applied_ptransform):

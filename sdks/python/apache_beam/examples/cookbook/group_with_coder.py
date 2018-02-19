@@ -25,7 +25,7 @@ This example assumes an input file with, on each line, a comma-separated name
 and score.
 """
 
-from __future__ import absolute_import
+
 
 import argparse
 import logging

@@ -17,9 +17,9 @@
 
 """Tests for apache_beam.runners.worker.data_plane."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
+
+
+
 
 import logging
 import sys
@@ -50,7 +50,7 @@ def timeout(timeout_secs):
       thread.join(timeout_secs)
       if exc_info:
         t, v, tb = exc_info  # pylint: disable=unbalanced-tuple-unpacking
-        raise t, v, tb
+        raise t(v).with_traceback(tb)
       assert not thread.is_alive(), 'timed out after %s seconds' % timeout_secs
     return wrapper
   return decorate

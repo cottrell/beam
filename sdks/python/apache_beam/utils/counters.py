@@ -214,4 +214,4 @@ class CounterFactory(object):
       this method returns hence the returned iterable may be stale.
     """
     with self._lock:
-      return self.counters.values()
+      return list(self.counters.values())

@@ -29,11 +29,11 @@ class LiftedCombinePerKey(beam.PTransform):
   """An implementation of CombinePerKey that does mapper-side pre-combining.
   """
   def __init__(self, combine_fn, args, kwargs):
-    args_to_check = itertools.chain(args, kwargs.values())
+    args_to_check = itertools.chain(args, list(kwargs.values()))
     if isinstance(combine_fn, _CurriedFn):
       args_to_check = itertools.chain(args_to_check,
                                       combine_fn.args,
-                                      combine_fn.kwargs.values())
+                                      list(combine_fn.kwargs.values()))
     if any(isinstance(arg, ArgumentPlaceholder)
            for arg in args_to_check):
       # This isn't implemented in dataflow either...
@@ -66,7 +66,7 @@ class PartialGroupByKeyCombiningValues(beam.DoFn):
                                                         vi)
 
   def finish_bundle(self):
-    for (k, w), va in self._cache.items():
+    for (k, w), va in list(self._cache.items()):
       yield WindowedValue((k, va), w.end, (w,))
 
   def default_type_hints(self):

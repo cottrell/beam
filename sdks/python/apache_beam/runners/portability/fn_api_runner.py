@@ -20,7 +20,7 @@
 import collections
 import copy
 import logging
-import Queue as queue
+import queue as queue
 import re
 import threading
 import time
@@ -132,7 +132,7 @@ class _GroupingBuffer(object):
       windowed_key_values = trigger_driver.process_entire_key
     coder_impl = self._post_grouped_coder.get_impl()
     key_coder_impl = self._key_coder.get_impl()
-    for encoded_key, windowed_values in self._table.items():
+    for encoded_key, windowed_values in list(self._table.items()):
       key = key_coder_impl.decode(encoded_key)
       for wkvs in windowed_key_values(key, windowed_values):
         coder_impl.encode_to_stream(wkvs, output_stream, True)
@@ -160,7 +160,7 @@ class _WindowGroupingBuffer(object):
 
   def items(self):
     value_coder_impl = self._value_coder.get_impl()
-    for window, values in self._values_by_window.items():
+    for window, values in list(self._values_by_window.items()):
       encoded_window = self._window_coder.encode(window)
       output_stream = create_OutputStream()
       for value in values:
@@ -271,7 +271,7 @@ class FnApiRunner(runner.PipelineRunner):
             local_side_inputs = payload.side_inputs
           else:
             local_side_inputs = {}
-          for local_id, pipeline_id in transform.inputs.items():
+          for local_id, pipeline_id in list(transform.inputs.items()):
             if pcoll == pipeline_id and local_id not in local_side_inputs:
               return True
 
@@ -280,7 +280,7 @@ class FnApiRunner(runner.PipelineRunner):
         new_transforms = []
         for transform in self.transforms:
           if transform.spec.urn == bundle_processor.DATA_INPUT_URN:
-            pcoll = only_element(transform.outputs.items())[1]
+            pcoll = only_element(list(transform.outputs.items()))[1]
             if pcoll in seen_pcolls:
               continue
             seen_pcolls.add(pcoll)
@@ -301,7 +301,7 @@ class FnApiRunner(runner.PipelineRunner):
       ... -> PreCombine -> GBK -> MergeAccumulators -> ExtractOutput -> ...
       """
       def add_or_get_coder_id(coder_proto):
-        for coder_id, coder in pipeline_components.coders.items():
+        for coder_id, coder in list(pipeline_components.coders.items()):
           if coder == coder_proto:
             return coder_id
         new_coder_id = unique_name(pipeline_components.coders, 'coder')
@@ -324,9 +324,9 @@ class FnApiRunner(runner.PipelineRunner):
               transform.spec.payload, beam_runner_api_pb2.CombinePayload)
 
           input_pcoll = pipeline_components.pcollections[only_element(
-              transform.inputs.values())]
+              list(transform.inputs.values()))]
           output_pcoll = pipeline_components.pcollections[only_element(
-              transform.outputs.values())]
+              list(transform.outputs.values()))]
 
           windowed_input_coder = pipeline_components.coders[
               input_pcoll.coder_id]
@@ -439,11 +439,11 @@ class FnApiRunner(runner.PipelineRunner):
       """Transforms each GBK into a write followed by a read.
       """
       good_coder_urns = set(
-          value for key, value in common_urns.__dict__.items()
+          value for key, value in list(common_urns.__dict__.items())
           if re.match('[A-Z][A-Z_]*$', key))
       coders = pipeline_components.coders
 
-      for coder_id, coder_proto in coders.items():
+      for coder_id, coder_proto in list(coders.items()):
         if coder_proto.spec.spec.urn == common_urns.BYTES_CODER:
           bytes_coder_id = coder_id
           break
@@ -503,9 +503,9 @@ class FnApiRunner(runner.PipelineRunner):
         assert len(stage.transforms) == 1
         transform = stage.transforms[0]
         if transform.spec.urn == common_urns.GROUP_BY_KEY_TRANSFORM:
-          for pcoll_id in transform.inputs.values():
+          for pcoll_id in list(transform.inputs.values()):
             fix_pcoll_coder(pipeline_components.pcollections[pcoll_id])
-          for pcoll_id in transform.outputs.values():
+          for pcoll_id in list(transform.outputs.values()):
             fix_pcoll_coder(pipeline_components.pcollections[pcoll_id])
 
           # This is used later to correlate the read and write.
@@ -552,10 +552,10 @@ class FnApiRunner(runner.PipelineRunner):
         if transform.spec.urn == common_urns.FLATTEN_TRANSFORM:
           # This is used later to correlate the read and writes.
           param = str("materialize:%s" % transform.unique_name)
-          output_pcoll_id, = transform.outputs.values()
+          output_pcoll_id, = list(transform.outputs.values())
           output_coder_id = pcollections[output_pcoll_id].coder_id
           flatten_writes = []
-          for local_in, pcoll_in in transform.inputs.items():
+          for local_in, pcoll_in in list(transform.inputs.items()):
 
             if pcollections[pcoll_in].coder_id != output_coder_id:
               # Flatten inputs must all be written with the same coder as is
@@ -626,7 +626,7 @@ class FnApiRunner(runner.PipelineRunner):
       all_side_inputs = set()
       for stage in stages:
         for transform in stage.transforms:
-          for input in transform.inputs.values():
+          for input in list(transform.inputs.values()):
             consumers[input].append(stage)
         for si in stage.side_inputs():
           all_side_inputs.add(si)
@@ -638,7 +638,7 @@ class FnApiRunner(runner.PipelineRunner):
         if stage not in downstream_side_inputs_by_stage:
           downstream_side_inputs = frozenset()
           for transform in stage.transforms:
-            for output in transform.outputs.values():
+            for output in list(transform.outputs.values()):
               if output in all_side_inputs:
                 downstream_side_inputs = union(
                     downstream_side_inputs, frozenset([output]))
@@ -680,16 +680,16 @@ class FnApiRunner(runner.PipelineRunner):
       # First record the producers and consumers of each PCollection.
       for stage in stages:
         for transform in stage.transforms:
-          for input in transform.inputs.values():
+          for input in list(transform.inputs.values()):
             consumers_by_pcoll[input].append(stage)
-          for output in transform.outputs.values():
+          for output in list(transform.outputs.values()):
             producers_by_pcoll[output] = stage
 
       logging.debug('consumers\n%s', consumers_by_pcoll)
       logging.debug('producers\n%s', producers_by_pcoll)
 
       # Now try to fuse away all pcollections.
-      for pcoll, producer in producers_by_pcoll.items():
+      for pcoll, producer in list(producers_by_pcoll.items()):
         pcoll_as_param = str("materialize:%s" % pcoll)
         write_pcoll = None
         for consumer in consumers_by_pcoll[pcoll]:
@@ -729,8 +729,8 @@ class FnApiRunner(runner.PipelineRunner):
 
       # Everything that was originally a stage or a replacement, but wasn't
       # replaced, should be in the final graph.
-      final_stages = frozenset(stages).union(replacements.values()).difference(
-          replacements.keys())
+      final_stages = frozenset(stages).union(list(replacements.values())).difference(
+          list(replacements.keys()))
 
       for stage in final_stages:
         # Update all references to their final values before throwing
@@ -763,7 +763,7 @@ class FnApiRunner(runner.PipelineRunner):
     # Reify coders.
     # TODO(BEAM-2717): Remove once Coders are already in proto.
     coders = pipeline_context.PipelineContext(pipeline_components).coders
-    for pcoll in pipeline_components.pcollections.values():
+    for pcoll in list(pipeline_components.pcollections.values()):
       if pcoll.coder_id not in coders:
         window_coder = coders[
             pipeline_components.windowing_strategies[
@@ -857,7 +857,7 @@ class FnApiRunner(runner.PipelineRunner):
         elif transform.spec.urn == common_urns.PARDO_TRANSFORM:
           payload = proto_utils.parse_Bytes(
               transform.spec.payload, beam_runner_api_pb2.ParDoPayload)
-          for tag, si in payload.side_inputs.items():
+          for tag, si in list(payload.side_inputs.items()):
             data_side_input[transform.unique_name, tag] = (
                 'materialize:' + transform.inputs[tag],
                 beam.pvalue.SideInputData.from_runner_api(si, None))
@@ -871,18 +871,18 @@ class FnApiRunner(runner.PipelineRunner):
         id=self._next_uid(),
         transforms={transform.unique_name: transform
                     for transform in stage.transforms},
-        pcollections=dict(pipeline_components.pcollections.items()),
-        coders=dict(pipeline_components.coders.items()),
+        pcollections=dict(list(pipeline_components.pcollections.items())),
+        coders=dict(list(pipeline_components.coders.items())),
         windowing_strategies=dict(
-            pipeline_components.windowing_strategies.items()),
-        environments=dict(pipeline_components.environments.items()))
+            list(pipeline_components.windowing_strategies.items())),
+        environments=dict(list(pipeline_components.environments.items())))
 
     # Store the required side inputs into state.
-    for (transform_id, tag), (pcoll_id, si) in data_side_input.items():
+    for (transform_id, tag), (pcoll_id, si) in list(data_side_input.items()):
       elements_by_window = _WindowGroupingBuffer(si)
       for element_data in pcoll_buffers[pcoll_id]:
         elements_by_window.append(element_data)
-      for window, elements_data in elements_by_window.items():
+      for window, elements_data in list(elements_by_window.items()):
         state_key = beam_fn_api_pb2.StateKey(
             multimap_side_input=beam_fn_api_pb2.StateKey.MultimapSideInput(
                 ptransform_id=transform_id,
@@ -901,8 +901,8 @@ class FnApiRunner(runner.PipelineRunner):
           original_gbk_transform = pcoll_id.split(':', 1)[1]
           transform_proto = pipeline_components.transforms[
               original_gbk_transform]
-          input_pcoll = only_element(transform_proto.inputs.values())
-          output_pcoll = only_element(transform_proto.outputs.values())
+          input_pcoll = only_element(list(transform_proto.inputs.values()))
+          output_pcoll = only_element(list(transform_proto.outputs.values()))
           pre_gbk_coder = context.coders[safe_coders[
               pipeline_components.pcollections[input_pcoll].coder_id]]
           post_gbk_coder = context.coders[safe_coders[
@@ -1079,7 +1079,7 @@ class BundleManager(object):
       self._registered = True
 
     # Write all the input data to the channel.
-    for (transform_id, name), elements in inputs.items():
+    for (transform_id, name), elements in list(inputs.items()):
       data_out = self._controller.data_plane_handler.output_stream(
           process_bundle_id, beam_fn_api_pb2.Target(
               primitive_transform_reference=transform_id, name=name))
@@ -1100,7 +1100,7 @@ class BundleManager(object):
       expected_targets = [
           beam_fn_api_pb2.Target(primitive_transform_reference=transform_id,
                                  name=output_name)
-          for (transform_id, output_name), _ in expected_outputs.items()]
+          for (transform_id, output_name), _ in list(expected_outputs.items())]
       logging.debug('Gather all output data from %s.', expected_targets)
       for output in self._controller.data_plane_handler.input_elements(
           process_bundle_id, expected_targets):
@@ -1147,7 +1147,7 @@ class ProgressRequester(threading.Thread):
         self._latest_progress = progress_result.process_bundle_progress
         if self._callback:
           self._callback(self._latest_progress)
-      except Exception, exn:
+      except Exception as exn:
         logging.error("Bad progress: %s", exn)
       time.sleep(self._frequency)
 
@@ -1181,8 +1181,8 @@ class FnApiMetrics(metrics.metric.MetricResults):
   def __init__(self, step_metrics):
     self._counters = {}
     self._distributions = {}
-    for step_metric in step_metrics.values():
-      for ptransform_id, ptransform in step_metric.ptransforms.items():
+    for step_metric in list(step_metrics.values()):
+      for ptransform_id, ptransform in list(step_metric.ptransforms.items()):
         for proto in ptransform.user:
           key = metrics.execution.MetricKey(
               ptransform_id,
@@ -1197,10 +1197,10 @@ class FnApiMetrics(metrics.metric.MetricResults):
 
   def query(self, filter=None):
     counters = [metrics.execution.MetricResult(k, v, v)
-                for k, v in self._counters.items()
+                for k, v in list(self._counters.items())
                 if self.matches(filter, k)]
     distributions = [metrics.execution.MetricResult(k, v, v)
-                     for k, v in self._distributions.items()
+                     for k, v in list(self._distributions.items())
                      if self.matches(filter, k)]
 
     return {'counters': counters,
