@@ -184,6 +184,10 @@ class PipelineOptions(HasDisplayData):
 
     return cls(flags)
 
+  def __repr__(self):
+    class_name = self.__class__.__name__
+    return '%s(%s)' % (class_name, print(self.get_params(deep=False),
+                                               offset=len(class_name),),)
   def get_all_options(self, drop_default=False):
     """Returns a dictionary of all defined arguments.
 
