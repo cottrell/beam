@@ -246,7 +246,7 @@ def run(argv=None):
   project = options.view_as(GoogleCloudOptions).project
   if project is None:
     parser.print_usage()
-    print(sys.argv[0] + ': error: argument --project is required')
+    print((sys.argv[0] + ': error: argument --project is required'))
     sys.exit(1)
 
   fixed_window_duration = args.fixed_window_duration * 60

@@ -129,7 +129,7 @@ class CodersTest(unittest.TestCase):
 
   def test_fast_primitives_coder(self):
     coder = coders.FastPrimitivesCoder(coders.SingletonCoder(len))
-    self.check_coder(coder, None, 1, -1, 1.5, 'str\0str', 'unicode\0\u0101')
+    self.check_coder(coder, None, 1, -1, 1.5, 'str\0str', 'unicode\0\\u0101')
     self.check_coder(coder, (), (1, 2, 3))
     self.check_coder(coder, [], [1, 2, 3])
     self.check_coder(coder, dict(), {'a': 'b'}, {0: dict(), 1: len})
@@ -220,7 +220,7 @@ class CodersTest(unittest.TestCase):
             (coders.TupleCoder((coders.PickleCoder(), coders.VarIntCoder())),
              coders.StrUtf8Coder())),
         ((1, 2), 'a'),
-        ((-2, 5), 'a\u0101' * 100),
+        ((-2, 5), 'a\\u0101' * 100),
         ((300, 1), 'abc\0' * 5))
 
   def test_tuple_sequence_coder(self):
@@ -234,7 +234,7 @@ class CodersTest(unittest.TestCase):
     self.check_coder(coders.Base64PickleCoder(), 'a', 1, 1.5, (1, 2, 3))
 
   def test_utf8_coder(self):
-    self.check_coder(coders.StrUtf8Coder(), 'a', 'ab\u00FF', '\u0101\0')
+    self.check_coder(coders.StrUtf8Coder(), 'a', 'ab\\u00FF', '\\u0101\0')
 
   def test_iterable_coder(self):
     iterable_coder = coders.IterableCoder(coders.VarIntCoder())

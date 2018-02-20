@@ -83,7 +83,7 @@ class JsonLogFormatterTest(unittest.TestCase):
     class Record(object):
 
       def __init__(self, **kwargs):
-        for k, v in kwargs.items():
+        for k, v in list(kwargs.items()):
           setattr(self, k, v)
 
     return Record(**kwargs)

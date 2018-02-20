@@ -101,7 +101,7 @@ class DataInputOperation(RunnerIOOperation):
     # We must do this manually as we don't have a spec or spec.output_coders.
     self.receivers = [
         operations.ConsumerSet(self.counter_factory, self.step_name, 0,
-                               next(iter(consumers.values())),
+                               next(iter(list(consumers.values()))),
                                self.windowed_coder)]
 
   def process(self, windowed_value):

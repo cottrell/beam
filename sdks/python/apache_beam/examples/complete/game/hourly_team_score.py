@@ -244,7 +244,7 @@ def run(argv=None):
   project = options.view_as(GoogleCloudOptions).project
   if project is None:
     parser.print_usage()
-    print(sys.argv[0] + ': error: argument --project is required')
+    print((sys.argv[0] + ': error: argument --project is required'))
     sys.exit(1)
 
   # We use the save_main_session option because one or more DoFn's in this

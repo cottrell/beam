@@ -203,7 +203,7 @@ class FnApiRunnerTest(
           m_out.processed_elements.measured.output_element_counts['twice'])
 
     except:
-      print(res._metrics_by_stage)
+      print((res._metrics_by_stage))
       raise
 
   # Inherits all tests from maptask_executor_runner.MapTaskExecutorRunner

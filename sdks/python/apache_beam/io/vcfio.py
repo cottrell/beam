@@ -369,7 +369,7 @@ class _VcfSource(filebasedsource.FileBasedSource):
       if record.FILTER is not None:
         variant.filters.extend(
             record.FILTER if record.FILTER else [PASS_FILTER])
-      for k, v in record.INFO.items():
+      for k, v in list(record.INFO.items()):
         # Special case: END info value specifies end of the record, so adjust
         # variant.end and do not include it as part of variant.info.
         if k == END_INFO_KEY:

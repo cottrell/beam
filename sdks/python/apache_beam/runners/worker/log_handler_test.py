@@ -101,7 +101,7 @@ def _create_test(name, num_logs):
           lambda self: self._verify_fn_log_handler(num_logs))
 
 
-for test_name, num_logs_entries in data.items():
+for test_name, num_logs_entries in list(data.items()):
   _create_test(test_name, num_logs_entries)
 
 

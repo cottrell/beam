@@ -1368,9 +1368,9 @@ class PTransformTypeCheckTestCase(TypeHintTestCase):
     # The type-hinted applied via the 'returns()' method indicates the ParDo
     # should output an instance of type 'int', however a 'float' will be
     # generated instead.
-    print("HINTS", ('ToInt' >> beam.FlatMap(
+    print(("HINTS", ('ToInt' >> beam.FlatMap(
         lambda x: [float(x)]).with_input_types(int).with_output_types(
-            int)).get_type_hints())
+            int)).get_type_hints()))
     with self.assertRaises(typehints.TypeCheckError) as e:
       (self.p
        | beam.Create([1, 2, 3])
