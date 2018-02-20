@@ -28,7 +28,8 @@ For internal use only; no backwards-compatibility guarantees.
 """
 
 
-from types import NoneType
+# from types import NoneType
+NoneType = type(None)
 
 from apache_beam.coders import observable
 from apache_beam.utils import windowed_value

@@ -96,7 +96,8 @@ else:
 
 
 REQUIRED_PACKAGES = [
-    'avro>=1.8.1,<2.0.0',
+    # 'avro>=1.8.1,<2.0.0',
+    'avro-python3',
     'crcmod>=1.7,<2.0',
     'dill==0.2.6',
     'grpcio>=1.0,<2',

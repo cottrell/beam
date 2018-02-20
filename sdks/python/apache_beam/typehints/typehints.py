@@ -411,6 +411,10 @@ class AnyTypeConstraint(TypeConstraint):
   def __repr__(self):
     return 'Any'
 
+  def __hash__(self):
+      # no idea, hacking an error away
+      return hash(type(self))
+
   def type_check(self, instance):
     pass
 
