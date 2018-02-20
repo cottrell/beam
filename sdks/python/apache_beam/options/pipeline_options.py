@@ -186,8 +186,9 @@ class PipelineOptions(HasDisplayData):
 
   def __repr__(self):
     class_name = self.__class__.__name__
-    return '%s(%s)' % (class_name, print(self.get_params(deep=False),
-                                               offset=len(class_name),),)
+    from apache_beam.utils import _pprint
+    return '{}({})'.format(class_name, _pprint(self.get_all_options()))
+
   def get_all_options(self, drop_default=False):
     """Returns a dictionary of all defined arguments.
 
